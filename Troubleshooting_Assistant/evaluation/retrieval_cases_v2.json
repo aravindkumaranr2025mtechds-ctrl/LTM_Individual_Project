@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "evaluation_id": "siemens_mc_retrieval_pilot_v0_2",
+  "purpose": "Reproducible development retrieval pilot; not training data, a held-out benchmark, expert certification or diagnostic accuracy.",
+  "source": {
+    "document_id": "212022f0a2614a7b839cc827522c6651_MC_diagnostics_man_0724_en-US",
+    "prepared_filename": "212022f0a2614a7b839cc827522c6651_MC_diagnostics_man_0724_en-US_chunks_v2_ready.json",
+    "prepared_sha256": "3934474104c528bdbe81bf536a573f8c231eba639bc969fe83619b23bafc60b7",
+    "canonical_content_sha256": "ea9d60b066248059d6b4dc62df294cbff7226d38fe4f0385c77c8b8d3d12f0a0",
+    "vector_store_filename": "212022f0a2614a7b839cc827522c6651_MC_diagnostics_man_0724_en-US_chunks_v2_ready_bge_small.npz",
+    "chunking_strategy": "siemens_alarm_sections_v2",
+    "expected_parent_records": 2495,
+    "expected_prepared_chunks": 2849,
+    "expected_detected_alarm_numbers": 2394
+  },
+  "search": {
+    "top_k": 5,
+    "match_key": ["document_id", "alarm_number"],
+    "require_distinct_parent_ids": true
+  },
+  "judgments": {
+    "expert_reviewed": false,
+    "positive_judgments_exhaustive": false,
+    "unlisted_results": "unjudged_not_automatically_irrelevant",
+    "aggregate_metrics_apply_only_to": "specific_semantic_cases",
+    "metrics": [
+      "known_positive_hit_at_1",
+      "known_positive_hit_at_3",
+      "known_positive_hit_at_5",
+      "known_positive_mrr_at_5"
+    ]
+  },
+  "specific_semantic_cases": [
+    {
+      "id": "S01",
+      "query": "During startup the channel has been assigned to a mode group incorrectly or more than once. Which configuration entry does the manual associate with this problem?",
+      "known_positive_alarm_numbers": ["16921"]
+    },
+    {
+      "id": "S02",
+      "query": "An axis encoder reports a hardware fault while it is being initialized or accessed. Which section describes that initialization failure?",
+      "known_positive_alarm_numbers": ["26020"]
+    },
+    {
+      "id": "S03",
+      "query": "The NCK backup battery has reached its early low-voltage warning level. What replacement time window is stated in the manual?",
+      "known_positive_alarm_numbers": ["2100"]
+    },
+    {
+      "id": "S04",
+      "query": "Low backup-battery voltage is detected while the NCK is powering up. Why does the manual warn about previously buffered data?",
+      "known_positive_alarm_numbers": ["2102"]
+    },
+    {
+      "id": "S05",
+      "query": "A new memory-configuration machine-data value is rejected because it would exceed available user memory. What do memory type letters D and S mean in this message?",
+      "known_positive_alarm_numbers": ["4077"]
+    },
+    {
+      "id": "S06",
+      "query": "The NC file system has reached its maximum number of files or part programs. Which manual entry explains this file-count limit?",
+      "known_positive_alarm_numbers": ["6510"]
+    },
+    {
+      "id": "S07",
+      "query": "A program block fails its grammar check after text containing non-ASCII characters is pasted into it. Which section discusses this possible character-related cause?",
+      "known_positive_alarm_numbers": ["12080"]
+    },
+    {
+      "id": "S08",
+      "query": "A measurement-cycle logfile is rejected because of its filename extension. Which extensions does the manual permit?",
+      "known_positive_alarm_numbers": ["61355"]
+    },
+    {
+      "id": "S09",
+      "query": "An initial G8x drilling-cycle call is missing its total depth or individual drilling depth. Which parameter letters does the manual identify?",
+      "known_positive_alarm_numbers": ["61808"]
+    },
+    {
+      "id": "S10",
+      "query": "The HMI Operate release requires a different CNC software version. Which manual section explains the risk of malfunctions or display problems from that mismatch?",
+      "known_positive_alarm_numbers": ["150301"]
+    },
+    {
+      "id": "S11",
+      "query": "PROFINET reports input IOPS=BAD at a logical start address for an NCK I/O slot. Which section describes that failure?",
+      "known_positive_alarm_numbers": ["380075"]
+    },
+    {
+      "id": "S12",
+      "query": "The PLC basic program was not initialized because LBP_ConfigBP was not called in the startup organization block. Which section documents this omission?",
+      "known_positive_alarm_numbers": ["404000"]
+    },
+    {
+      "id": "S13",
+      "query": "The machine warns that a factory-standard password is still active for the manufacturer, service, or user access level. What does the manual recommend?",
+      "known_positive_alarm_numbers": ["2130"]
+    },
+    {
+      "id": "S14",
+      "query": "The configured directory for a measurement logfile does not exist or its path is wrong. Which log-name parameter does the manual reference?",
+      "known_positive_alarm_numbers": ["61353"]
+    },
+    {
+      "id": "S15",
+      "query": "The required PLC data blocks exist but are too small to be used. Which manual section describes this size problem?",
+      "known_positive_alarm_numbers": ["404004"]
+    },
+    {
+      "id": "S16",
+      "query": "One or more CNC options have been activated, but no license key has been entered at all. Which licensing message matches that situation?",
+      "known_positive_alarm_numbers": ["8080"]
+    }
+  ],
+  "ambiguous_review_cases": [
+    {
+      "id": "A01",
+      "query": "The mode group and channel are not ready and a system error is displayed. What information should I send to Technical Support?",
+      "known_positive_alarm_numbers": ["1001", "1014", "1016"],
+      "information_only_alarm_numbers": ["1000", "1002"],
+      "score_in_aggregate": false
+    },
+    {
+      "id": "A02",
+      "query": "During startup or after a reset, the operator panel has no NC/PLC communication and its displayed values are invalid. Can this be a temporary ramp-up condition?",
+      "known_positive_alarm_numbers": ["150201", "150202"],
+      "score_in_aggregate": false
+    },
+    {
+      "id": "A03",
+      "query": "A measurement logfile path is invalid or points to a missing directory. Which parameter is identified in the manual for checking that path?",
+      "known_positive_alarm_numbers": ["61352", "61353"],
+      "score_in_aggregate": false
+    }
+  ],
+  "section_completeness_checks": [
+    {
+      "id": "C01",
+      "alarm_number": "1005",
+      "expected_page_numbers": [26, 27],
+      "required_text": [
+        "Explanation:",
+        "Remedy:",
+        "continuation:",
+        "Remedy: If you experience such a system error, please contact Technical Support."
+      ],
+      "score_in_aggregate": false
+    },
+    {
+      "id": "C02",
+      "alarm_number": "17055",
+      "expected_page_numbers": [365, 366],
+      "required_text": [
+        "Explanation:",
+        "Remedy:",
+        "continuation:",
+        "Remedy: Check whether all the GUDs were created for MEACALC."
+      ],
+      "score_in_aggregate": false
+    },
+    {
+      "id": "C03",
+      "alarm_number": "61007",
+      "expected_page_numbers": [522, 523],
+      "required_text": [
+        "Explanation:",
+        "Remedy:",
+        "continuation:",
+        "Remedy: Select a larger tool."
+      ],
+      "score_in_aggregate": false
+    },
+    {
+      "id": "C04",
+      "alarm_number": "120406",
+      "expected_page_numbers": [728, 729],
+      "required_text": [
+        "Explanation:",
+        "Remedy:",
+        "continuation:",
+        "Remedy: Switch off/on drive system including all DRIVE-CLiQ components."
+      ],
+      "score_in_aggregate": false
+    }
+  ]
+}

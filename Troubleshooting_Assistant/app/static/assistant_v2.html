@@ -1,0 +1,6511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+>
+<title>Industrial Troubleshooting Workspace</title>
+
+<style>
+:root {
+    --bg: #eef2f4;
+    --surface: #ffffff;
+    --surface-soft: #f6f8f9;
+    --surface-dark: #17232d;
+    --text: #18242d;
+    --muted: #667681;
+    --border: #d9e1e5;
+    --accent: #166b8f;
+    --accent-soft: #e9f4f8;
+    --success: #25764a;
+    --success-soft: #edf7f1;
+    --warning: #9a6811;
+    --warning-soft: #fff7e6;
+    --danger: #a33b3b;
+    --shadow:
+        0 10px 35px rgba(23,35,45,.08);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        linear-gradient(
+            180deg,
+            #e8eef1 0,
+            #f4f6f7 260px,
+            #eef2f4 100%
+        );
+    color: var(--text);
+    font-family:
+        Inter,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.workspace {
+    width: min(
+        1480px,
+        calc(100% - 32px)
+    );
+    margin: 0 auto;
+    padding: 24px 0 48px;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 21px 24px;
+    border-radius: 18px;
+    background: var(--surface-dark);
+    color: #fff;
+    box-shadow: var(--shadow);
+}
+
+.brand-kicker {
+    margin-bottom: 4px;
+    color: #9fc4d2;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.brand-title {
+    margin: 0;
+    font-size: clamp(
+        20px,
+        3vw,
+        30px
+    );
+    line-height: 1.15;
+}
+
+.brand-subtitle {
+    margin-top: 6px;
+    color: #c8d5dc;
+    font-size: 14px;
+}
+
+.system-badges {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 999px;
+    background: rgba(255,255,255,.07);
+    color: #edf7fa;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge-dot {
+    width: 8px;
+    height: 8px;
+    margin-right: 7px;
+    border-radius: 50%;
+    background: #65d391;
+}
+
+.view-switch {
+    display: flex;
+    gap: 8px;
+    margin: 18px 0;
+    padding: 6px;
+    width: fit-content;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: rgba(255,255,255,.82);
+}
+
+.view-switch button {
+    min-height: 42px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.view-switch button.active {
+    background: var(--surface-dark);
+    color: #fff;
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.25fr)
+        minmax(320px, .75fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.card {
+    min-width: 0;
+    border: 1px solid var(--border);
+    border-radius: 17px;
+    background: var(--surface);
+    box-shadow:
+        0 3px 18px rgba(23,35,45,.045);
+}
+
+.card-header {
+    padding: 19px 21px 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+.card-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.card-description {
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.card-body {
+    padding: 20px 21px;
+}
+
+.mode-tabs {
+    display: flex;
+    gap: 9px;
+    padding: 5px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+    background: var(--surface-soft);
+}
+
+.mode-tabs button {
+    flex: 1;
+    min-height: 42px;
+    border: 0;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--muted);
+    font-weight: 750;
+}
+
+.mode-tabs button.active {
+    background: #fff;
+    color: var(--accent);
+    box-shadow:
+        0 2px 9px rgba(23,35,45,.08);
+}
+
+#guided,
+#search {
+    display: none;
+}
+
+#guided.active,
+#search.active {
+    display: block;
+}
+
+#guided:not([hidden]).active,
+#search:not([hidden]).active {
+    display: block;
+}
+
+form {
+    display: grid;
+    gap: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    color: #344650;
+    font-size: 13px;
+    font-weight: 750;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 13px;
+    border: 1px solid #cfd9de;
+    border-radius: 10px;
+    outline: none;
+    background: #fff;
+    color: var(--text);
+    transition:
+        border .15s ease,
+        box-shadow .15s ease;
+}
+
+textarea {
+    min-height: 116px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--accent);
+    box-shadow:
+        0 0 0 3px rgba(22,107,143,.12);
+}
+
+form button[type="submit"] {
+    min-height: 48px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 800;
+}
+
+#reset {
+    min-height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--muted);
+    font-weight: 750;
+}
+
+.result-shell {
+    margin-top: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    background: var(--surface-soft);
+}
+
+.result-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 15px;
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+}
+
+.result-title {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.result-status {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+#reviewOutput,
+#searchOutput {
+    min-height: 100px;
+    padding: 16px;
+    overflow-wrap: anywhere;
+}
+
+.progress-list {
+    display: grid;
+    gap: 2px;
+}
+
+.progress-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    align-items: center;
+    min-height: 48px;
+}
+
+.progress-marker {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 2px solid #c9d4d9;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.progress-item:not(:last-child)
+.progress-marker::after {
+    content: "";
+    position: absolute;
+    top: 24px;
+    left: 10px;
+    width: 2px;
+    height: 30px;
+    background: #dbe3e7;
+}
+
+.progress-item.complete
+.progress-marker {
+    border-color: var(--success);
+    background: var(--success-soft);
+    color: var(--success);
+}
+
+.progress-item.current
+.progress-marker {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.progress-label {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.progress-item.complete
+.progress-label,
+.progress-item.current
+.progress-label {
+    color: var(--text);
+}
+
+.info-strip {
+    display: grid;
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+    gap: 11px;
+    margin-top: 18px;
+}
+
+.info-box {
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--surface-soft);
+}
+
+.info-box strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+.info-box span {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.safety-box {
+    margin-top: 18px;
+    padding: 15px;
+    border: 1px solid #d7e7dc;
+    border-radius: 12px;
+    background: var(--success-soft);
+}
+
+.safety-title {
+    margin-bottom: 8px;
+    color: var(--success);
+    font-size: 12px;
+    font-weight: 850;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.safety-row {
+    margin-top: 5px;
+    color: #345244;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.explain-box {
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: #fff;
+}
+
+.explain-box summary {
+    padding: 13px 14px;
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.explain-content {
+    padding: 0 14px 14px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.engineer-panel {
+    display: none;
+    margin-top: 18px;
+}
+
+body.engineer-mode
+.engineer-panel {
+    display: block;
+}
+
+.engineer-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+    gap: 12px;
+}
+
+.engineer-metric {
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    background: #fff;
+}
+
+.engineer-label {
+    margin-bottom: 5px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+}
+
+.engineer-value {
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.advanced-note {
+    margin-top: 13px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.footer-note {
+    margin-top: 18px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+@media (max-width: 980px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .engineer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .workspace {
+        width: min(
+            100% - 18px,
+            1480px
+        );
+        padding-top: 10px;
+    }
+
+    .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 18px;
+        border-radius: 14px;
+    }
+
+    .system-badges {
+        justify-content: flex-start;
+    }
+
+    .view-switch {
+        width: 100%;
+    }
+
+    .view-switch button {
+        flex: 1;
+        padding: 0 8px;
+        font-size: 13px;
+    }
+
+    .card-header,
+    .card-body {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .info-strip,
+    .engineer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mode-tabs {
+        flex-direction: column;
+    }
+}
+</style>
+
+<style id="industrialTechnicianTheme">
+    :root {
+        --bg: #eef3f7;
+        --panel: #ffffff;
+        --panel-soft: #f7f9fb;
+        --line: #d8e0e7;
+        --line-strong: #becbd5;
+        --text: #17242e;
+        --muted: #60717e;
+        --primary: #0b5f87;
+        --primary-dark: #084866;
+        --primary-soft: #e8f3f8;
+        --success: #16764a;
+        --success-soft: #eaf7f0;
+        --warning: #a0640d;
+        --warning-soft: #fff6e8;
+        --danger: #a83b3b;
+        --danger-soft: #fff0f0;
+        --shadow: 0 14px 38px rgba(23, 36, 46, .09);
+        --radius: 16px;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        background: var(--bg);
+    }
+
+    body {
+        margin: 0 !important;
+        min-height: 100vh;
+        background:
+            linear-gradient(
+                180deg,
+                #e8eff4 0,
+                #f5f7f9 280px,
+                #eef3f7 100%
+            ) !important;
+        color: var(--text) !important;
+        font-family:
+            "Segoe UI",
+            Arial,
+            sans-serif !important;
+        line-height: 1.5;
+    }
+
+    body::before {
+        content: "";
+        display: block;
+        height: 5px;
+        background:
+            linear-gradient(
+                90deg,
+                #084866,
+                #0b6f99,
+                #14956d
+            );
+    }
+
+    .industrial-shell {
+        max-width: 1440px;
+        margin: 0 auto;
+        padding: 22px 26px 40px;
+    }
+
+    .industrial-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 18px;
+        padding: 20px 24px;
+        background: rgba(255,255,255,.94);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+    }
+
+    .industrial-brand {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-width: 0;
+    }
+
+    .industrial-mark {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        background: var(--primary);
+        color: #fff;
+        font-size: 21px;
+        font-weight: 800;
+        letter-spacing: -.5px;
+    }
+
+    .industrial-brand h1 {
+        margin: 0;
+        font-size: 23px;
+        line-height: 1.2;
+        font-weight: 720;
+        color: var(--text);
+    }
+
+    .industrial-brand p {
+        margin: 5px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+    }
+
+    .system-status {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+
+    .status-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        border: 1px solid #cfe3d8;
+        background: var(--success-soft);
+        color: var(--success);
+        font-size: 12px;
+        font-weight: 650;
+        white-space: nowrap;
+    }
+
+    .status-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--success);
+        box-shadow: 0 0 0 3px rgba(22,118,74,.12);
+    }
+
+    .industrial-notice {
+        display: grid;
+        grid-template-columns:
+            minmax(0,1fr)
+            minmax(0,1fr);
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .operator-card {
+        padding: 13px 15px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(255,255,255,.9);
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    .operator-card strong {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--text);
+        font-size: 12px;
+    }
+
+    /* Existing application container */
+    body > main,
+    body > .container,
+    body > .app,
+    body > .wrap {
+        max-width: 1440px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    main,
+    .container,
+    .app,
+    .workspace,
+    .shell {
+        position: relative;
+    }
+
+    /* Tabs */
+    #guidedTab,
+    #searchTab {
+        min-height: 44px !important;
+        padding: 10px 18px !important;
+        border-radius: 10px !important;
+        font-weight: 650 !important;
+        transition:
+            background .18s ease,
+            transform .18s ease,
+            border-color .18s ease !important;
+    }
+
+    #guidedTab:hover,
+    #searchTab:hover {
+        transform: translateY(-1px);
+    }
+
+    /* Main panels */
+    #guided,
+    #search {
+        border-radius: var(--radius) !important;
+    }
+
+    #reviewForm,
+    #searchForm {
+        background: var(--panel) !important;
+        border: 1px solid var(--line) !important;
+        border-radius: var(--radius) !important;
+        box-shadow: var(--shadow) !important;
+        padding: 22px !important;
+    }
+
+    #reviewOutput,
+    #searchOutput {
+        background: var(--panel) !important;
+        border: 1px solid var(--line) !important;
+        border-radius: var(--radius) !important;
+        min-height: 170px;
+        padding: 20px !important;
+        box-shadow:
+            0 9px 24px rgba(23,36,46,.06) !important;
+    }
+
+    #initialFields {
+        border-radius: 12px;
+    }
+
+    /* Form controls */
+    input,
+    select,
+    textarea {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid var(--line-strong) !important;
+        border-radius: 9px !important;
+        background: #fff !important;
+        color: var(--text) !important;
+        padding: 10px 12px !important;
+        font: inherit !important;
+        outline: none !important;
+        transition:
+            border-color .15s ease,
+            box-shadow .15s ease !important;
+    }
+
+    textarea {
+        min-height: 104px;
+        resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: var(--primary) !important;
+        box-shadow:
+            0 0 0 3px rgba(11,95,135,.12) !important;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 6px;
+        color: #344753 !important;
+        font-size: 12px !important;
+        font-weight: 680 !important;
+        letter-spacing: .01em;
+    }
+
+    button {
+        min-height: 42px;
+        border-radius: 9px !important;
+        cursor: pointer;
+        font-weight: 680 !important;
+        transition:
+            transform .15s ease,
+            box-shadow .15s ease,
+            opacity .15s ease;
+    }
+
+    button:hover {
+        transform: translateY(-1px);
+    }
+
+    button:active {
+        transform: translateY(0);
+    }
+
+    #reset {
+        border: 1px solid var(--line-strong) !important;
+        background: #fff !important;
+        color: #425562 !important;
+    }
+
+    #mode,
+    #manufacturer {
+        font-weight: 600;
+    }
+
+    #sessionLabel {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 4px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--panel-soft);
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    #description {
+        color: var(--muted) !important;
+    }
+
+    #alarmLabel {
+        color: #455965 !important;
+    }
+
+    /* Common output content */
+    #reviewOutput h1,
+    #reviewOutput h2,
+    #reviewOutput h3,
+    #searchOutput h1,
+    #searchOutput h2,
+    #searchOutput h3 {
+        color: var(--text) !important;
+    }
+
+    #reviewOutput pre,
+    #searchOutput pre {
+        overflow: auto;
+        max-width: 100%;
+        padding: 14px;
+        border-radius: 9px;
+        border: 1px solid var(--line);
+        background: #f6f8fa;
+        font-size: 12px;
+    }
+
+    .industrial-section-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 750;
+        letter-spacing: .07em;
+        text-transform: uppercase;
+    }
+
+    .industrial-section-label::before {
+        content: "";
+        width: 18px;
+        height: 3px;
+        border-radius: 2px;
+        background: var(--primary);
+    }
+
+    .operator-footer {
+        margin-top: 20px;
+        padding: 14px 18px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: rgba(255,255,255,.75);
+        color: var(--muted);
+        font-size: 11px;
+        text-align: center;
+    }
+
+    @media (max-width: 900px) {
+        .industrial-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .system-status {
+            justify-content: flex-start;
+        }
+
+        .industrial-notice {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .industrial-shell {
+            padding: 14px 12px 28px;
+        }
+
+        .industrial-header {
+            padding: 16px;
+        }
+
+        .industrial-brand h1 {
+            font-size: 19px;
+        }
+
+        #reviewForm,
+        #searchForm,
+        #reviewOutput,
+        #searchOutput {
+            padding: 15px !important;
+        }
+    }
+</style>
+
+<style id="enterpriseEvidenceTechnicianStyle">
+    .technician-evidence-card {
+        margin-top: 12px;
+        padding: 16px 17px !important;
+        border-left:
+            4px solid var(--primary) !important;
+        background:
+            var(--panel-soft) !important;
+    }
+
+    .technician-evidence-card h3 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        font-size: 15px;
+    }
+
+    .technician-evidence-card p {
+        margin:
+            6px 0;
+    }
+
+    .technician-reliability {
+        margin:
+            14px 0;
+        border-left:
+            4px solid var(--success) !important;
+        background:
+            var(--success-soft) !important;
+    }
+
+    .technician-reliability h3 {
+        margin-top: 0;
+    }
+
+    .technician-safety-result {
+        margin-top: 16px;
+        border-left:
+            4px solid var(--warning) !important;
+        background:
+            var(--warning-soft) !important;
+    }
+
+    .technician-safety-result h3 {
+        margin-top: 0;
+    }
+</style>
+
+<style id="operatorWorkflowPolishStyle">
+    .operator-search-help {
+        margin-top: 12px;
+        padding: 11px 13px;
+        border-radius: 9px;
+        border: 1px solid var(--line);
+        background: var(--panel-soft);
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    .operator-search-help strong {
+        color: var(--text);
+    }
+
+    .guided-review-handoff {
+        margin-top: 17px;
+        padding: 16px !important;
+        border-left:
+            4px solid var(--primary) !important;
+        background:
+            var(--primary-soft) !important;
+    }
+
+    .guided-review-handoff h3 {
+        margin-top: 0;
+    }
+
+    .guided-review-handoff button {
+        margin-top: 6px;
+        padding: 8px 14px;
+        border: 0;
+        background: var(--primary);
+        color: #fff;
+    }
+
+    .evidence-empty-state {
+        margin-top: 12px;
+        border-left:
+            4px solid var(--warning) !important;
+        background:
+            var(--warning-soft) !important;
+    }
+</style>
+
+<style id="tabVisibilityContract">
+    /*
+       Tab visibility contract.
+
+       JavaScript controls the `hidden` attribute.
+       These rules prevent presentation CSS from overriding
+       the actual workspace state.
+    */
+
+    #guided[hidden],
+    #search[hidden] {
+        display: none !important;
+    }
+
+    #guided:not([hidden]),
+    #search:not([hidden]) {
+        display: block !important;
+    }
+</style>
+
+<style id="sourcePagePreviewStyles">
+
+.source-page-actions {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(127, 127, 127, 0.28);
+}
+
+.source-page-actions .source-page-reference {
+    margin: 0 0 8px 0;
+}
+
+.source-page-button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.source-page-dialog {
+    width: min(1120px, 94vw);
+    height: min(900px, 92vh);
+    max-width: none;
+    max-height: none;
+    padding: 0;
+    border: 1px solid rgba(127, 127, 127, 0.42);
+    border-radius: 12px;
+    background: Canvas;
+    color: CanvasText;
+}
+
+.source-page-dialog::backdrop {
+    background: rgba(0, 0, 0, 0.55);
+}
+
+.source-page-dialog-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+.source-page-dialog-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(127, 127, 127, 0.32);
+}
+
+.source-page-dialog-heading {
+    min-width: 0;
+}
+
+.source-page-dialog-heading h2 {
+    margin: 0 0 4px 0;
+}
+
+.source-page-dialog-heading p {
+    margin: 0;
+}
+
+.source-page-close {
+    flex: 0 0 auto;
+}
+
+.source-page-frame {
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
+    border: 0;
+    background: white;
+}
+
+.source-page-dialog-note {
+    margin: 0;
+    padding: 10px 18px;
+    border-top: 1px solid rgba(127, 127, 127, 0.32);
+}
+
+@media (max-width: 720px) {
+
+    .source-page-dialog {
+        width: 98vw;
+        height: 95vh;
+    }
+
+    .source-page-dialog-header {
+        padding: 12px;
+    }
+}
+
+</style>
+
+<style id="technicianCleanupStyle">
+
+/*
+  Raw/internal responses are hidden from technicians.
+  Existing Engineering details mode may reveal them.
+*/
+.engineer-only-detail {
+    display: none !important;
+}
+
+body.engineer-mode .engineer-only-detail {
+    display: block !important;
+}
+
+</style>
+
+<style id="industrialActionTheme">
+
+/* =========================================================
+   INDUSTRIAL ACTION LANGUAGE
+
+   Teal   = technician workspace
+   Purple = engineering information
+   Green  = guided troubleshooting
+   Blue   = technical evidence search
+   Amber  = primary-source inspection
+   Red    = reset / close
+   ========================================================= */
+
+:root {
+    --action-blue: #1769e0;
+    --action-blue-dark: #0e4fae;
+
+    --action-green: #198754;
+    --action-green-dark: #11633d;
+
+    --action-amber: #d97706;
+    --action-amber-dark: #a95404;
+
+    --action-purple: #6f42c1;
+    --action-purple-dark: #533096;
+
+    --action-teal: #087f8c;
+    --action-teal-dark: #05616b;
+
+    --action-red: #c43d3d;
+    --action-red-dark: #962e2e;
+
+    --action-neutral: #4e5968;
+}
+
+
+/* ---------------------------------------------------------
+   Base button treatment
+   --------------------------------------------------------- */
+
+button {
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    padding: 10px 16px;
+
+    font: inherit;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+
+    cursor: pointer;
+
+    transition:
+        transform 140ms ease,
+        box-shadow 140ms ease,
+        background 140ms ease,
+        border-color 140ms ease,
+        opacity 140ms ease;
+}
+
+
+button:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+
+button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+
+button:focus-visible {
+    outline: 3px solid rgba(23, 105, 224, 0.26);
+    outline-offset: 3px;
+}
+
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.52;
+    transform: none;
+}
+
+
+/* ---------------------------------------------------------
+   TECHNICIAN VIEW
+   --------------------------------------------------------- */
+
+#technicianViewBtn {
+    background:
+        linear-gradient(
+            135deg,
+            var(--action-teal),
+            var(--action-teal-dark)
+        );
+
+    color: white;
+
+    box-shadow:
+        0 5px 14px rgba(8, 127, 140, 0.19);
+}
+
+
+#technicianViewBtn:hover:not(:disabled) {
+    box-shadow:
+        0 7px 18px rgba(8, 127, 140, 0.28);
+}
+
+
+#technicianViewBtn.active {
+    box-shadow:
+        0 0 0 3px rgba(8, 127, 140, 0.20),
+        0 6px 18px rgba(8, 127, 140, 0.24);
+}
+
+
+/* ---------------------------------------------------------
+   ENGINEERING DETAILS
+   --------------------------------------------------------- */
+
+#engineerViewBtn {
+    background:
+        linear-gradient(
+            135deg,
+            var(--action-purple),
+            var(--action-purple-dark)
+        );
+
+    color: white;
+
+    box-shadow:
+        0 5px 14px rgba(111, 66, 193, 0.18);
+}
+
+
+#engineerViewBtn:hover:not(:disabled) {
+    box-shadow:
+        0 7px 18px rgba(111, 66, 193, 0.27);
+}
+
+
+#engineerViewBtn.active {
+    box-shadow:
+        0 0 0 3px rgba(111, 66, 193, 0.18),
+        0 6px 18px rgba(111, 66, 193, 0.25);
+}
+
+
+/* ---------------------------------------------------------
+   GUIDED TROUBLESHOOTING
+   --------------------------------------------------------- */
+
+#guidedTab,
+.guided-review-handoff button {
+    background:
+        linear-gradient(
+            135deg,
+            var(--action-green),
+            var(--action-green-dark)
+        );
+
+    color: white;
+
+    box-shadow:
+        0 5px 14px rgba(25, 135, 84, 0.18);
+}
+
+
+#guidedTab:hover:not(:disabled),
+.guided-review-handoff button:hover:not(:disabled) {
+    box-shadow:
+        0 7px 18px rgba(25, 135, 84, 0.27);
+}
+
+
+/* ---------------------------------------------------------
+   TECHNICAL EVIDENCE SEARCH
+   --------------------------------------------------------- */
+
+#searchTab,
+#searchForm button[type="submit"] {
+    background:
+        linear-gradient(
+            135deg,
+            var(--action-blue),
+            var(--action-blue-dark)
+        );
+
+    color: white;
+
+    box-shadow:
+        0 5px 14px rgba(23, 105, 224, 0.18);
+}
+
+
+#searchTab:hover:not(:disabled),
+#searchForm button[type="submit"]:hover:not(:disabled) {
+    box-shadow:
+        0 7px 18px rgba(23, 105, 224, 0.28);
+}
+
+
+/* ---------------------------------------------------------
+   ORIGINAL SOURCE / MANUFACTURER EVIDENCE
+   --------------------------------------------------------- */
+
+.source-page-button-group button {
+    background:
+        linear-gradient(
+            135deg,
+            #f59e0b,
+            var(--action-amber)
+        );
+
+    color: #1f1605;
+
+    border-color:
+        rgba(217, 119, 6, 0.58);
+
+    box-shadow:
+        0 5px 14px rgba(217, 119, 6, 0.20);
+}
+
+
+.source-page-button-group button:hover:not(:disabled) {
+    background:
+        linear-gradient(
+            135deg,
+            var(--action-amber),
+            var(--action-amber-dark)
+        );
+
+    color: white;
+
+    box-shadow:
+        0 7px 18px rgba(217, 119, 6, 0.30);
+}
+
+
+/* Give evidence-source actions their own visual region. */
+
+.source-page-actions {
+    border-radius: 8px;
+
+    background:
+        rgba(217, 119, 6, 0.055);
+
+    padding:
+        12px 12px 11px;
+}
+
+
+/* ---------------------------------------------------------
+   REPORT CHOICES
+   --------------------------------------------------------- */
+
+.choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+
+.choices button {
+    background:
+        rgba(23, 105, 224, 0.08);
+
+    color:
+        #174f96;
+
+    border-color:
+        rgba(23, 105, 224, 0.35);
+
+    box-shadow: none;
+}
+
+
+.choices button:hover:not(:disabled) {
+    background:
+        var(--action-blue);
+
+    color:
+        white;
+
+    border-color:
+        var(--action-blue);
+}
+
+
+/* ---------------------------------------------------------
+   RESET
+   --------------------------------------------------------- */
+
+#reset {
+    background:
+        transparent;
+
+    color:
+        var(--action-red);
+
+    border-color:
+        rgba(196, 61, 61, 0.55);
+
+    box-shadow: none;
+}
+
+
+#reset:hover:not(:disabled) {
+    background:
+        var(--action-red);
+
+    color:
+        white;
+
+    border-color:
+        var(--action-red);
+}
+
+
+/* ---------------------------------------------------------
+   SOURCE-PAGE CLOSE
+   --------------------------------------------------------- */
+
+.source-page-close {
+    background:
+        var(--action-red);
+
+    color:
+        white;
+
+    border-color:
+        var(--action-red);
+
+    box-shadow:
+        0 4px 12px rgba(196, 61, 61, 0.18);
+}
+
+
+.source-page-close:hover:not(:disabled) {
+    background:
+        var(--action-red-dark);
+
+    border-color:
+        var(--action-red-dark);
+
+    box-shadow:
+        0 6px 16px rgba(196, 61, 61, 0.28);
+}
+
+
+/* ---------------------------------------------------------
+   EVIDENCE CARD EMPHASIS
+   --------------------------------------------------------- */
+
+.technician-evidence-card {
+    transition:
+        transform 150ms ease,
+        box-shadow 150ms ease,
+        border-color 150ms ease;
+}
+
+
+.technician-evidence-card:hover {
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 8px 22px rgba(20, 35, 55, 0.09);
+}
+
+
+/* ---------------------------------------------------------
+   RELIABILITY AND SAFETY DIFFERENTIATION
+   --------------------------------------------------------- */
+
+.technician-reliability {
+    border-left:
+        4px solid var(--action-blue);
+}
+
+
+.technician-safety-result {
+    border-left:
+        4px solid var(--action-green);
+}
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE BUTTONS
+   --------------------------------------------------------- */
+
+@media (max-width: 720px) {
+
+    #searchForm button[type="submit"],
+    .guided-review-handoff button {
+        width: 100%;
+    }
+
+
+    .source-page-button-group {
+        width: 100%;
+    }
+
+
+    .source-page-button-group button {
+        width: 100%;
+    }
+}
+
+
+/* ---------------------------------------------------------
+   ACCESSIBILITY
+   --------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+
+    button,
+    .technician-evidence-card {
+        transition: none !important;
+    }
+
+
+    button:hover:not(:disabled),
+    .technician-evidence-card:hover {
+        transform: none !important;
+    }
+}
+
+</style>
+
+<style id="workspaceModePolishStyles">
+
+body {
+    --workspace-accent: #2563eb;
+    --workspace-accent-strong: #1d4ed8;
+    --workspace-accent-soft: #eff6ff;
+    --workspace-border: #bfdbfe;
+
+    --evidence-accent: #0284c7;
+    --verified-accent: #15803d;
+    --attention-accent: #b45309;
+    --danger-accent: #b91c1c;
+}
+
+
+/* ==========================================================
+   TECHNICIAN / ENGINEERING MODE SWITCH
+   ========================================================== */
+
+#technicianViewBtn,
+#engineerViewBtn {
+    min-height: 48px;
+    padding: 10px 22px;
+
+    border-radius: 12px;
+
+    font-weight: 750;
+
+    transition:
+        background-color 160ms ease,
+        border-color 160ms ease,
+        color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+
+#technicianViewBtn:hover,
+#engineerViewBtn:hover {
+    transform: translateY(-1px);
+}
+
+
+/* Technician mode */
+
+body:not(.engineer-mode)
+#technicianViewBtn {
+    color: #ffffff;
+    border-color: #2563eb;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1d4ed8,
+            #2563eb
+        );
+
+    box-shadow:
+        0 8px 24px
+        rgba(37, 99, 235, 0.24);
+}
+
+
+body:not(.engineer-mode)
+#engineerViewBtn {
+    color: #6d28d9;
+    border-color: #ddd6fe;
+    background: #faf5ff;
+}
+
+
+/* Engineering mode */
+
+body.engineer-mode {
+    --workspace-accent: #7c3aed;
+    --workspace-accent-strong: #6d28d9;
+    --workspace-accent-soft: #f5f3ff;
+    --workspace-border: #ddd6fe;
+}
+
+
+body.engineer-mode
+#engineerViewBtn {
+    color: #ffffff;
+    border-color: #7c3aed;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6d28d9,
+            #8b5cf6
+        );
+
+    box-shadow:
+        0 8px 24px
+        rgba(124, 58, 237, 0.26);
+}
+
+
+body.engineer-mode
+#technicianViewBtn {
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+    background: #eff6ff;
+}
+
+
+/* ==========================================================
+   WORKSPACE DESCRIPTION PANEL
+   ========================================================== */
+
+.workspace-mode-context {
+    margin: 14px 0 20px;
+
+    border:
+        1px solid
+        var(--workspace-border);
+
+    border-left:
+        5px solid
+        var(--workspace-accent);
+
+    border-radius: 14px;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            var(--workspace-accent-soft),
+            #ffffff
+        );
+
+    box-shadow:
+        0 8px 26px
+        rgba(15, 23, 42, 0.05);
+
+    transition:
+        border-color 180ms ease,
+        background-color 180ms ease,
+        box-shadow 180ms ease;
+}
+
+
+.workspace-mode-panel {
+    padding: 16px 20px;
+}
+
+
+.workspace-mode-panel h3 {
+    margin: 0 0 6px;
+
+    color:
+        var(--workspace-accent-strong);
+}
+
+
+.workspace-mode-panel p {
+    margin: 0;
+
+    line-height: 1.55;
+}
+
+
+.workspace-mode-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-top: 12px;
+}
+
+
+.workspace-mode-badge {
+    display: inline-flex;
+    align-items: center;
+
+    min-height: 30px;
+
+    padding: 5px 10px;
+
+    border:
+        1px solid
+        var(--workspace-border);
+
+    border-radius: 999px;
+
+    color:
+        var(--workspace-accent-strong);
+
+    background:
+        rgba(255, 255, 255, 0.9);
+
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+
+.engineering-workspace-context {
+    display: none;
+}
+
+
+body.engineer-mode
+.engineering-workspace-context {
+    display: block;
+}
+
+
+body.engineer-mode
+.technician-workspace-context {
+    display: none;
+}
+
+
+/* ==========================================================
+   MAIN WORKSPACE SECTION IDENTITY
+   ========================================================== */
+
+#guided,
+#search {
+    border-top:
+        4px solid
+        var(--workspace-accent);
+
+    transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+}
+
+
+/* Evidence search stays cyan/blue in both modes. */
+
+#search {
+    border-top-color:
+        var(--evidence-accent);
+}
+
+
+body.engineer-mode
+#guided {
+    box-shadow:
+        0 12px 34px
+        rgba(109, 40, 217, 0.08);
+}
+
+
+/* ==========================================================
+   RESULT CARDS
+   ========================================================== */
+
+#reviewOutput .row,
+#searchOutput .row {
+    border-left:
+        4px solid
+        var(--workspace-accent);
+
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+
+#searchOutput .row {
+    border-left-color:
+        var(--evidence-accent);
+}
+
+
+#reviewOutput .row:hover,
+#searchOutput .row:hover {
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 10px 28px
+        rgba(15, 23, 42, 0.07);
+}
+
+
+/* ==========================================================
+   VERIFIED SOURCE = GREEN
+   ========================================================== */
+
+.source-page-actions {
+    border-top-color:
+        rgba(21, 128, 61, 0.22);
+}
+
+
+.source-page-actions button {
+    color: #ffffff;
+
+    border-color:
+        #15803d;
+
+    background:
+        linear-gradient(
+            135deg,
+            #15803d,
+            #16a34a
+        );
+}
+
+
+.source-page-actions button:hover {
+    background:
+        linear-gradient(
+            135deg,
+            #166534,
+            #15803d
+        );
+}
+
+
+/* ==========================================================
+   ENGINEERING TECHNICAL INFORMATION
+   ========================================================== */
+
+body.engineer-mode
+.technician-reliability {
+    border-left-color:
+        #7c3aed !important;
+
+    background:
+        linear-gradient(
+            135deg,
+            #faf5ff,
+            #ffffff
+        );
+}
+
+
+/*
+ Technician view hides raw source-response JSON/details.
+ Engineering Console reveals them.
+*/
+
+body:not(.engineer-mode)
+#reviewOutput details,
+body:not(.engineer-mode)
+#searchOutput details {
+    display: none;
+}
+
+
+body.engineer-mode
+#reviewOutput details,
+body.engineer-mode
+#searchOutput details {
+    display: block;
+
+    margin-top: 14px;
+
+    border:
+        1px solid
+        #ddd6fe;
+
+    border-radius: 10px;
+
+    background:
+        #faf5ff;
+}
+
+
+body.engineer-mode
+#reviewOutput details summary,
+body.engineer-mode
+#searchOutput details summary {
+    cursor: pointer;
+
+    padding: 10px 12px;
+
+    color: #6d28d9;
+
+    font-weight: 750;
+}
+
+
+/* ==========================================================
+   PROGRESS COLOUR MEANING
+   ========================================================== */
+
+#progressList .progress-item.complete {
+    color: #166534;
+}
+
+
+#progressList .progress-item.current {
+    color:
+        var(--workspace-accent-strong);
+
+    font-weight: 750;
+}
+
+
+body.engineer-mode
+#progressList .progress-item.current {
+    color: #6d28d9;
+}
+
+
+/* ==========================================================
+   ACCESSIBILITY
+   ========================================================== */
+
+#technicianViewBtn:focus-visible,
+#engineerViewBtn:focus-visible {
+    outline:
+        3px solid
+        var(--workspace-accent);
+
+    outline-offset: 3px;
+}
+
+
+@media (max-width: 760px) {
+
+    #technicianViewBtn,
+    #engineerViewBtn {
+        width: 100%;
+    }
+
+    .workspace-mode-panel {
+        padding: 14px;
+    }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+    #technicianViewBtn,
+    #engineerViewBtn,
+    #reviewOutput .row,
+    #searchOutput .row,
+    .workspace-mode-context,
+    #guided,
+    #search {
+        transition: none !important;
+    }
+}
+
+</style>
+
+<style id="industrialWorkspaceRedesignV1">
+
+/* ==========================================================
+   INDUSTRIAL WORKSPACE REDESIGN V1
+
+   Frontend-only design layer.
+   Existing element IDs, APIs and application logic remain
+   unchanged.
+   ========================================================== */
+
+:root {
+    --iw-bg: #f3f6f8;
+    --iw-surface: #ffffff;
+    --iw-surface-soft: #f8fafb;
+    --iw-ink: #17212b;
+    --iw-muted: #61707d;
+    --iw-border: #d9e1e6;
+    --iw-border-strong: #c3cfd7;
+
+    --iw-primary: #126b72;
+    --iw-primary-dark: #0b5359;
+    --iw-primary-soft: #e8f4f4;
+
+    --iw-accent: #c67a16;
+    --iw-accent-soft: #fff4df;
+
+    --iw-danger: #a13a3a;
+    --iw-danger-soft: #fff0f0;
+
+    --iw-success: #28724f;
+    --iw-success-soft: #eaf6ef;
+
+    --iw-dark: #182833;
+    --iw-dark-2: #223944;
+
+    --iw-shadow:
+        0 10px 30px rgba(26, 42, 52, 0.08);
+
+    --iw-shadow-small:
+        0 3px 12px rgba(26, 42, 52, 0.06);
+
+    --iw-radius-xl: 22px;
+    --iw-radius-lg: 16px;
+    --iw-radius-md: 11px;
+    --iw-radius-sm: 8px;
+}
+
+
+html {
+    background:
+        var(--iw-bg);
+}
+
+
+body.industrial-workspace-v1 {
+    margin: 0;
+    min-height: 100vh;
+
+    background:
+        linear-gradient(
+            180deg,
+            #eef3f5 0,
+            #f5f7f8 240px,
+            #f3f6f8 100%
+        );
+
+    color:
+        var(--iw-ink);
+
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    line-height: 1.5;
+}
+
+
+/* ----------------------------------------------------------
+   TOP APPLICATION HEADER
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+#industrialHeaderShell {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+
+    background:
+        rgba(24, 40, 51, 0.97);
+
+    backdrop-filter:
+        blur(14px);
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
+    box-shadow:
+        0 3px 20px
+        rgba(12, 25, 33, 0.16);
+}
+
+
+body.industrial-workspace-v1
+#industrialHeaderShell h1,
+body.industrial-workspace-v1
+#industrialHeaderShell h2,
+body.industrial-workspace-v1
+#industrialHeaderShell strong {
+    letter-spacing:
+        -0.02em;
+}
+
+
+body.industrial-workspace-v1
+#industrialHeaderShell button {
+    min-height:
+        38px;
+
+    border-radius:
+        9px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.16);
+}
+
+
+/* ----------------------------------------------------------
+   NEW OPERATOR INTRO
+   ---------------------------------------------------------- */
+
+#industrialWorkspaceIntro {
+    width:
+        min(1440px, calc(100% - 40px));
+
+    margin:
+        28px auto 18px;
+
+    box-sizing:
+        border-box;
+
+    overflow:
+        hidden;
+
+    border:
+        1px solid
+        var(--iw-border);
+
+    border-radius:
+        var(--iw-radius-xl);
+
+    background:
+        var(--iw-surface);
+
+    box-shadow:
+        var(--iw-shadow);
+}
+
+
+#industrialWorkspaceIntro
+.iw-intro-main {
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(0, 1.5fr)
+        minmax(280px, 0.7fr);
+
+    gap:
+        28px;
+
+    align-items:
+        center;
+
+    padding:
+        30px 32px;
+}
+
+
+#industrialWorkspaceIntro
+.iw-eyebrow {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    margin-bottom:
+        11px;
+
+    color:
+        var(--iw-primary);
+
+    font-size:
+        12px;
+
+    font-weight:
+        750;
+
+    letter-spacing:
+        0.09em;
+
+    text-transform:
+        uppercase;
+}
+
+
+#industrialWorkspaceIntro
+.iw-eyebrow::before {
+    content:
+        "";
+
+    width:
+        9px;
+
+    height:
+        9px;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--iw-primary);
+
+    box-shadow:
+        0 0 0 5px
+        var(--iw-primary-soft);
+}
+
+
+#industrialWorkspaceIntro
+h1 {
+    margin:
+        0;
+
+    max-width:
+        850px;
+
+    color:
+        var(--iw-ink);
+
+    font-size:
+        clamp(29px, 3vw, 45px);
+
+    line-height:
+        1.08;
+
+    letter-spacing:
+        -0.035em;
+}
+
+
+#industrialWorkspaceIntro
+.iw-intro-copy {
+    max-width:
+        820px;
+
+    margin:
+        15px 0 0;
+
+    color:
+        var(--iw-muted);
+
+    font-size:
+        16px;
+
+    line-height:
+        1.7;
+}
+
+
+#industrialWorkspaceIntro
+.iw-intro-state {
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:
+        10px;
+}
+
+
+#industrialWorkspaceIntro
+.iw-state {
+    min-height:
+        88px;
+
+    padding:
+        15px;
+
+    box-sizing:
+        border-box;
+
+    border:
+        1px solid
+        var(--iw-border);
+
+    border-radius:
+        13px;
+
+    background:
+        var(--iw-surface-soft);
+}
+
+
+#industrialWorkspaceIntro
+.iw-state-label {
+    color:
+        var(--iw-muted);
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        0.07em;
+
+    text-transform:
+        uppercase;
+}
+
+
+#industrialWorkspaceIntro
+.iw-state-value {
+    margin-top:
+        6px;
+
+    color:
+        var(--iw-ink);
+
+    font-size:
+        14px;
+
+    font-weight:
+        700;
+}
+
+
+#industrialWorkspaceIntro
+.iw-principles {
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    border-top:
+        1px solid
+        var(--iw-border);
+
+    background:
+        #fbfcfd;
+}
+
+
+#industrialWorkspaceIntro
+.iw-principle {
+    padding:
+        18px 22px;
+
+    border-right:
+        1px solid
+        var(--iw-border);
+}
+
+
+#industrialWorkspaceIntro
+.iw-principle:last-child {
+    border-right:
+        0;
+}
+
+
+#industrialWorkspaceIntro
+.iw-principle strong {
+    display:
+        block;
+
+    margin-bottom:
+        4px;
+
+    color:
+        var(--iw-ink);
+
+    font-size:
+        13px;
+}
+
+
+#industrialWorkspaceIntro
+.iw-principle span {
+    color:
+        var(--iw-muted);
+
+    font-size:
+        12px;
+}
+
+
+/* ----------------------------------------------------------
+   MODE NAVIGATION
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+#guidedTab,
+body.industrial-workspace-v1
+#searchTab {
+    min-height:
+        44px;
+
+    padding:
+        0 18px;
+
+    border-radius:
+        10px;
+
+    border:
+        1px solid
+        var(--iw-border-strong);
+
+    background:
+        var(--iw-surface);
+
+    color:
+        var(--iw-muted);
+
+    font-weight:
+        700;
+
+    transition:
+        150ms ease;
+}
+
+
+body.industrial-workspace-v1
+#guidedTab:hover,
+body.industrial-workspace-v1
+#searchTab:hover {
+    border-color:
+        var(--iw-primary);
+
+    color:
+        var(--iw-primary);
+}
+
+
+body.industrial-workspace-v1
+#guidedTab[aria-selected="true"],
+body.industrial-workspace-v1
+#searchTab[aria-selected="true"],
+body.industrial-workspace-v1
+#guidedTab.active,
+body.industrial-workspace-v1
+#searchTab.active {
+    border-color:
+        var(--iw-primary);
+
+    background:
+        var(--iw-primary);
+
+    color:
+        #ffffff;
+
+    box-shadow:
+        0 5px 16px
+        rgba(18, 107, 114, 0.18);
+}
+
+
+/* ----------------------------------------------------------
+   MAIN WORKSPACE CARDS
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+main {
+    width:
+        min(1440px, calc(100% - 40px));
+
+    margin:
+        0 auto 44px;
+
+    box-sizing:
+        border-box;
+}
+
+
+body.industrial-workspace-v1
+section,
+body.industrial-workspace-v1
+aside {
+    box-sizing:
+        border-box;
+}
+
+
+body.industrial-workspace-v1
+#guided,
+body.industrial-workspace-v1
+#search {
+    border:
+        1px solid
+        var(--iw-border);
+
+    border-radius:
+        var(--iw-radius-xl);
+
+    background:
+        var(--iw-surface);
+
+    box-shadow:
+        var(--iw-shadow-small);
+
+    overflow:
+        hidden;
+}
+
+
+body.industrial-workspace-v1
+#reviewForm,
+body.industrial-workspace-v1
+#searchForm {
+    padding:
+        8px 2px;
+}
+
+
+/* ----------------------------------------------------------
+   FORM LANGUAGE
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+label {
+    color:
+        var(--iw-ink);
+
+    font-weight:
+        650;
+}
+
+
+body.industrial-workspace-v1
+input,
+body.industrial-workspace-v1
+select,
+body.industrial-workspace-v1
+textarea {
+    width:
+        100%;
+
+    min-height:
+        44px;
+
+    box-sizing:
+        border-box;
+
+    border:
+        1px solid
+        var(--iw-border-strong);
+
+    border-radius:
+        10px;
+
+    background:
+        #ffffff;
+
+    color:
+        var(--iw-ink);
+
+    font:
+        inherit;
+
+    outline:
+        none;
+
+    transition:
+        border-color 140ms ease,
+        box-shadow 140ms ease,
+        background 140ms ease;
+}
+
+
+body.industrial-workspace-v1
+textarea {
+    min-height:
+        110px;
+
+    resize:
+        vertical;
+}
+
+
+body.industrial-workspace-v1
+input:focus,
+body.industrial-workspace-v1
+select:focus,
+body.industrial-workspace-v1
+textarea:focus {
+    border-color:
+        var(--iw-primary);
+
+    box-shadow:
+        0 0 0 3px
+        rgba(18, 107, 114, 0.12);
+
+    background:
+        #ffffff;
+}
+
+
+body.industrial-workspace-v1
+button {
+    font:
+        inherit;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform 120ms ease,
+        box-shadow 120ms ease,
+        border-color 120ms ease,
+        background 120ms ease;
+}
+
+
+body.industrial-workspace-v1
+button:hover:not(:disabled) {
+    transform:
+        translateY(-1px);
+}
+
+
+body.industrial-workspace-v1
+button:disabled {
+    cursor:
+        not-allowed;
+
+    opacity:
+        0.58;
+}
+
+
+/* Main action buttons */
+
+body.industrial-workspace-v1
+#reviewForm button[type="submit"],
+body.industrial-workspace-v1
+#searchForm button[type="submit"] {
+    min-height:
+        46px;
+
+    padding:
+        0 20px;
+
+    border:
+        1px solid
+        var(--iw-primary);
+
+    border-radius:
+        10px;
+
+    background:
+        var(--iw-primary);
+
+    color:
+        white;
+
+    font-weight:
+        750;
+
+    box-shadow:
+        0 5px 16px
+        rgba(18, 107, 114, 0.16);
+}
+
+
+body.industrial-workspace-v1
+#reset {
+    min-height:
+        44px;
+
+    border:
+        1px solid
+        var(--iw-border-strong);
+
+    border-radius:
+        10px;
+
+    background:
+        white;
+
+    color:
+        var(--iw-muted);
+
+    font-weight:
+        650;
+}
+
+
+/* ----------------------------------------------------------
+   STATUS AREAS
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+#reviewStatusText,
+body.industrial-workspace-v1
+#searchStatusText {
+    border-radius:
+        9px;
+
+    color:
+        var(--iw-muted);
+
+    font-size:
+        13px;
+
+    line-height:
+        1.45;
+}
+
+
+body.industrial-workspace-v1
+#reviewStatusText.iw-form-warning {
+    padding:
+        11px 13px;
+
+    border:
+        1px solid
+        #ebc987;
+
+    background:
+        var(--iw-accent-soft);
+
+    color:
+        #805010;
+
+    font-weight:
+        650;
+}
+
+
+/* ----------------------------------------------------------
+   RESULTS / EVIDENCE
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+#reviewOutput,
+body.industrial-workspace-v1
+#searchOutput {
+    margin-top:
+        16px;
+}
+
+
+body.industrial-workspace-v1
+#reviewOutput > *,
+body.industrial-workspace-v1
+#searchOutput > * {
+    border-radius:
+        12px;
+}
+
+
+body.industrial-workspace-v1
+#reviewOutput[data-has-content="true"],
+body.industrial-workspace-v1
+#searchOutput[data-has-content="true"] {
+    padding-top:
+        6px;
+}
+
+
+body.industrial-workspace-v1
+#reviewOutput h2,
+body.industrial-workspace-v1
+#reviewOutput h3,
+body.industrial-workspace-v1
+#searchOutput h2,
+body.industrial-workspace-v1
+#searchOutput h3 {
+    color:
+        var(--iw-ink);
+
+    letter-spacing:
+        -0.02em;
+}
+
+
+/* Make individual evidence/result cards read as operational
+   information rather than debug output. */
+
+body.industrial-workspace-v1
+#reviewOutput article,
+body.industrial-workspace-v1
+#searchOutput article,
+body.industrial-workspace-v1
+#reviewOutput .card,
+body.industrial-workspace-v1
+#searchOutput .card {
+    border:
+        1px solid
+        var(--iw-border);
+
+    border-radius:
+        var(--iw-radius-lg);
+
+    background:
+        var(--iw-surface);
+
+    box-shadow:
+        none;
+}
+
+
+/* ----------------------------------------------------------
+   TROUBLESHOOTING PROGRESS
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+aside {
+    border:
+        1px solid
+        var(--iw-border);
+
+    border-radius:
+        var(--iw-radius-xl);
+
+    background:
+        var(--iw-surface);
+
+    box-shadow:
+        var(--iw-shadow-small);
+}
+
+
+body.industrial-workspace-v1
+#progressList {
+    position:
+        relative;
+
+    display:
+        grid;
+
+    gap:
+        8px;
+}
+
+
+body.industrial-workspace-v1
+#progressList > * {
+    border-radius:
+        11px;
+
+    transition:
+        140ms ease;
+}
+
+
+/* ----------------------------------------------------------
+   ENGINEERING DETAILS
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+#engineerPanel {
+    border:
+        1px solid
+        var(--iw-border);
+
+    border-radius:
+        var(--iw-radius-lg);
+
+    background:
+        #f7f9fa;
+}
+
+
+body.industrial-workspace-v1
+#engineerPanel::before {
+    content:
+        "Engineering detail";
+
+    display:
+        inline-block;
+
+    margin-bottom:
+        10px;
+
+    color:
+        var(--iw-muted);
+
+    font-size:
+        11px;
+
+    font-weight:
+        750;
+
+    letter-spacing:
+        0.08em;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* ----------------------------------------------------------
+   SOURCE-PAGE BUTTONS / EVIDENCE ACTIONS
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+button[class*="source"],
+body.industrial-workspace-v1
+button[class*="evidence"] {
+    border-radius:
+        9px;
+
+    font-weight:
+        700;
+}
+
+
+/* ----------------------------------------------------------
+   ERROR PRESENTATION
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+[role="alert"] {
+    border-radius:
+        11px;
+}
+
+
+/* ----------------------------------------------------------
+   ACCESSIBILITY
+   ---------------------------------------------------------- */
+
+body.industrial-workspace-v1
+button:focus-visible,
+body.industrial-workspace-v1
+a:focus-visible,
+body.industrial-workspace-v1
+input:focus-visible,
+body.industrial-workspace-v1
+select:focus-visible,
+body.industrial-workspace-v1
+textarea:focus-visible {
+    outline:
+        3px solid
+        rgba(18, 107, 114, 0.24);
+
+    outline-offset:
+        2px;
+}
+
+
+/* ----------------------------------------------------------
+   RESPONSIVE
+   ---------------------------------------------------------- */
+
+@media (max-width: 980px) {
+
+    #industrialWorkspaceIntro
+    .iw-intro-main {
+        grid-template-columns:
+            1fr;
+    }
+
+    #industrialWorkspaceIntro
+    .iw-principles {
+        grid-template-columns:
+            1fr;
+    }
+
+    #industrialWorkspaceIntro
+    .iw-principle {
+        border-right:
+            0;
+
+        border-bottom:
+            1px solid
+            var(--iw-border);
+    }
+
+    #industrialWorkspaceIntro
+    .iw-principle:last-child {
+        border-bottom:
+            0;
+    }
+}
+
+
+@media (max-width: 680px) {
+
+    #industrialWorkspaceIntro,
+    body.industrial-workspace-v1
+    main {
+        width:
+            min(100% - 22px, 1440px);
+    }
+
+    #industrialWorkspaceIntro {
+        margin-top:
+            16px;
+    }
+
+    #industrialWorkspaceIntro
+    .iw-intro-main {
+        padding:
+            22px 19px;
+    }
+
+    #industrialWorkspaceIntro
+    .iw-intro-state {
+        grid-template-columns:
+            1fr;
+    }
+
+    #industrialWorkspaceIntro
+    h1 {
+        font-size:
+            30px;
+    }
+
+    #industrialWorkspaceIntro
+    .iw-intro-copy {
+        font-size:
+            14px;
+    }
+
+    body.industrial-workspace-v1
+    #guidedTab,
+    body.industrial-workspace-v1
+    #searchTab {
+        width:
+            100%;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+<div class="industrial-shell" id="industrialHeaderShell">
+    <header class="industrial-header">
+        <div class="industrial-brand">
+            <div class="industrial-mark">IT</div>
+
+            <div>
+                <h1>
+                    Industrial Troubleshooting Assistant
+                </h1>
+
+                <p>
+                    Evidence-guided support for technicians
+                    and machine operators
+                </p>
+            </div>
+        </div>
+
+        <div class="system-status">
+            <span class="status-chip">
+                <span class="status-dot"></span>
+                System Ready
+            </span>
+
+            <span class="status-chip">
+                <span class="status-dot"></span>
+                Evidence Connected
+            </span>
+
+            <span class="status-chip">
+                <span class="status-dot"></span>
+                Safety Guard Active
+            </span>
+        </div>
+    </header>
+
+    <section class="industrial-notice">
+        <div class="operator-card">
+            <strong>Evidence-grounded assistance</strong>
+            Retrieved technical evidence is shown separately
+            from technician observations.
+        </div>
+
+        <div class="operator-card">
+            <strong>Operator safety boundary</strong>
+            Cause is not automatically confirmed.
+            No automatic machine action is performed.
+        </div>
+    </section>
+</div>
+
+
+<div class="workspace">
+
+    <header class="topbar">
+        <div>
+            <div class="brand-kicker">
+                Industrial Decision Support
+            </div>
+
+            <h1 class="brand-title">
+                Troubleshooting Assistant
+            </h1>
+
+            <div class="brand-subtitle">
+                Guided, evidence-grounded assistance for
+                technicians and machine operators
+            </div>
+        </div>
+
+        <div class="system-badges">
+            <span class="badge">
+                <span class="badge-dot"></span>
+                System ready
+            </span>
+
+            <span class="badge">
+                Evidence grounded
+            </span>
+
+            <span class="badge">
+                Bounded assistance
+            </span>
+        </div>
+    </header>
+
+    <div class="view-switch">
+        <button
+            type="button"
+            id="technicianViewBtn"
+            class="active"
+        >
+            Technician view
+        </button>
+
+        <button
+            type="button"
+            id="engineerViewBtn"
+        >
+            Engineering details
+        </button>
+    </div>
+
+    <main class="main-grid">
+
+        <section class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    Tell us what happened
+                </h2>
+
+                <div class="card-description">
+                    Start with the machine condition or search
+                    the technical manual directly.
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <div class="mode-tabs">
+                    <button
+                        id="guidedTab"
+                        type="button"
+                        class="active"
+                    >
+                        Guided assistance
+                    </button>
+
+                    <button
+                        id="searchTab"
+                        type="button"
+                    >
+                        Manual search
+                    </button>
+                </div>
+
+                <section
+                    id="guided"
+                    class="active"
+                >
+                    <form id="reviewForm">
+<label>Supported workflow<select id="mode" required><option value="">Choose a workflow</option><option value="abb_stall">ABB - Motor stalls</option><option value="siemens_licensing">Siemens - Licensing 8080 / 8081</option><option value="siemens_logfile">Siemens - Logfile parameter</option></select></label>
+<label>Machine / observation interval<input id="sessionLabel" placeholder="Example: Motor A, today's morning shift" maxlength="150"></label>
+<label>Description<textarea id="description" maxlength="2000" placeholder="Describe the information you need."></textarea></label>
+<div id="initialFields"></div><button type="submit">Start new review</button> <button id="reset" type="button" class="secondary">Clear</button>
+</form>
+
+                    <div class="result-shell">
+                        <div class="result-heading">
+                            <div class="result-title">
+                                Troubleshooting guidance
+                            </div>
+
+                            <div
+                                class="result-status"
+                                id="reviewStatusText"
+                            >
+                                Waiting for machine information
+                            </div>
+                        </div>
+
+                        <div id="reviewOutput"></div>
+                    </div>
+
+                    <details class="explain-box">
+                        <summary>
+                            Why does the assistant ask questions?
+                        </summary>
+
+                        <div class="explain-content">
+                            The assistant does not convert an
+                            assumption into a machine fact.
+                            If an important condition is unknown,
+                            it asks for confirmation or suggests
+                            a check before using that information.
+                        </div>
+                    </details>
+                </section>
+
+                <section id="search">
+                    <form id="searchForm">
+<label>Manufacturer<select id="manufacturer"><option value="Siemens">Siemens diagnostics</option><option value="ABB">ABB LV Motors</option></select></label>
+<label>Problem or search phrase (required)<textarea id="query" maxlength="2000" placeholder="Example: Motor stalls after startup"></textarea></label>
+<label id="alarmLabel">Exact Siemens alarm number<input id="alarm" placeholder="Example: 1001" maxlength="30"></label>
+<button type="submit">Search Technical Evidence</button>
+
+<div class="operator-search-help">
+    <strong>Describe only what you observed.</strong>
+    Search retrieves registered technical evidence.
+    Use Guided Review for structured troubleshooting questions.
+</div>
+</form>
+
+                    <div class="result-shell">
+                        <div class="result-heading">
+                            <div class="result-title">
+                                Manufacturer evidence
+                            </div>
+
+                            <div
+                                class="result-status"
+                                id="searchStatusText"
+                            >
+                                No search performed
+                            </div>
+                        </div>
+
+                        <div id="searchOutput"></div>
+                    </div>
+                </section>
+
+            </div>
+        </section>
+
+
+        <aside>
+
+            <section class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        Troubleshooting progress
+                    </h2>
+
+                    <div class="card-description">
+                        The system separates understanding,
+                        evidence retrieval and verification.
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <div
+                        class="progress-list"
+                        id="progressList"
+                    >
+                        <div
+                            class="progress-item current"
+                            data-stage="understand"
+                        >
+                            <span class="progress-marker">
+                                1
+                            </span>
+
+                            <span class="progress-label">
+                                Understand the problem
+                            </span>
+                        </div>
+
+                        <div
+                            class="progress-item"
+                            data-stage="clarification"
+                        >
+                            <span class="progress-marker">
+                                2
+                            </span>
+
+                            <span class="progress-label">
+                                Check missing information
+                            </span>
+                        </div>
+
+                        <div
+                            class="progress-item"
+                            data-stage="evidence"
+                        >
+                            <span class="progress-marker">
+                                3
+                            </span>
+
+                            <span class="progress-label">
+                                Search technical evidence
+                            </span>
+                        </div>
+
+                        <div
+                            class="progress-item"
+                            data-stage="verification"
+                        >
+                            <span class="progress-marker">
+                                4
+                            </span>
+
+                            <span class="progress-label">
+                                Verify the evidence
+                            </span>
+                        </div>
+
+                        <div
+                            class="progress-item"
+                            data-stage="guidance"
+                        >
+                            <span class="progress-marker">
+                                5
+                            </span>
+
+                            <span class="progress-label">
+                                Provide guidance
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="info-strip">
+                        <div class="info-box">
+                            <strong>
+                                What we know
+                            </strong>
+
+                            <span>
+                                Explicit operator inputs are
+                                kept separate from assumptions.
+                            </span>
+                        </div>
+
+                        <div class="info-box">
+                            <strong>
+                                What needs checking
+                            </strong>
+
+                            <span>
+                                Missing conditions are requested
+                                before they are treated as facts.
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="safety-box">
+                        <div class="safety-title">
+                            Safety boundary
+                        </div>
+
+                        <div class="safety-row">
+                            Cause is not automatically confirmed.
+                        </div>
+
+                        <div class="safety-row">
+                            No automatic machine action is performed.
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+
+            <section
+                class="card engineer-panel"
+                id="engineerPanel"
+            >
+                <div class="card-header">
+                    <h2 class="card-title">
+                        Engineering details
+                    </h2>
+
+                    <div class="card-description">
+                        Technical information for engineers,
+                        evaluators and project demonstrations.
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="engineer-grid">
+
+                        <div class="engineer-metric">
+                            <div class="engineer-label">
+                                Architecture
+                            </div>
+
+                            <div class="engineer-value">
+                                Bounded Agentic AI
+                            </div>
+                        </div>
+
+                        <div class="engineer-metric">
+                            <div class="engineer-label">
+                                Evidence
+                            </div>
+
+                            <div class="engineer-value">
+                                Manufacturer grounded
+                            </div>
+                        </div>
+
+                        <div class="engineer-metric">
+                            <div class="engineer-label">
+                                Reliability
+                            </div>
+
+                            <div class="engineer-value">
+                                ITRS enabled
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="advanced-note">
+                        Provider details, agent decisions,
+                        citations, latency and detailed ITRS
+                        components will remain in this advanced
+                        view rather than the operator workflow.
+                    </div>
+                </div>
+            </section>
+
+        </aside>
+
+    </main>
+
+    <div class="footer-note">
+        Evidence-grounded troubleshooting assistance.
+        Verify machine conditions before physical action.
+    </div>
+
+</div>
+
+
+<script>
+
+const $=id=>document.getElementById(id);
+const make=(tag,text,cls)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e;};
+const config={
+ abb_stall:{requested_information:['Information needed',[['Ask me to choose',''],['List manual causes','list_possible_causes'],['Review existing reports','review_reports'],['Can a cause be identified?','identify_cause']]],open_phase_reported:'One phase may be open',wrong_application_reported:'Wrong application',overload_reported:'Overload',low_voltage_reported:'Low voltage',open_circuit_reported:'Open circuit'},
+ siemens_licensing:{options_activated:'Options activated',license_key_set:'License key set / entered',entered_key_covers_activated_options:'Entered key covers activated options',reported_alarm_number:['Reported alarm',[['Not supplied',''],['8080','8080'],['8081','8081']]]},
+ siemens_logfile:{alarm_scope:['Alarm scope',[['Ask me which scope',''],['61352','61352'],['61353','61353'],['61352 or 61353','61352_or_61353'],['61358','61358'],['61352 or 61353 or 61358','61352_or_61353_or_61358']]]}
+};
+let current=null,busy=false;
+function lock(value){busy=value;document.querySelectorAll('button,input,select,textarea').forEach(e=>e.disabled=value);}
+function tabs(which){$('guided').hidden=which!=='guided';$('search').hidden=which!=='search';}
+$('guidedTab').onclick=()=>tabs('guided');$('searchTab').onclick=()=>tabs('search');
+function fields(){current=null;$('initialFields').replaceChildren();for(const [key,spec] of Object.entries(config[$('mode').value]||{})){const options=Array.isArray(spec)?spec[1]:[['Not supplied',''],['Reported present','true'],['Reported absent','false'],['Cannot clarify now','defer']];const label=make('label',Array.isArray(spec)?spec[0]:spec),select=make('select');select.dataset.fact=key;for(const [text,value] of options){const option=make('option',text);option.value=value;select.append(option);}label.append(select);$('initialFields').append(label);}}
+$('mode').onchange=()=>{fields();$('reviewOutput').replaceChildren(make('h2','Your review'),make('p','Workflow changed. Start a new review.','muted'));};
+$('initialFields').onchange=()=>{if(current){current=null;$('reviewOutput').replaceChildren(make('p','Inputs changed. Start a new review to use them.','muted'));}};
+for(const id of ['sessionLabel','description'])$(id).onchange=()=>{if(current){fields();$('reviewOutput').replaceChildren(make('p','Context changed. Enter reports for this context and start a new review.','muted'));}};
+$('reset').onclick=()=>{current=null;$('reviewForm').reset();fields();$('reviewOutput').replaceChildren(make('h2','Your review'),make('p','Review cleared.','muted'));};
+async function post(path,payload){const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const body=await response.json();if(!response.ok){const detail=typeof body.detail==='string'?body.detail:JSON.stringify(body.detail);throw new Error('HTTP '+response.status+': '+detail);}return body;}
+function details(parent,body){const d=make('details');d.classList.add('engineer-only-detail');d.append(make('summary','Full source response'),make('pre',JSON.stringify(body,null,2)));parent.append(d);}
+function evidence(parent,item){const ev=item.evidence||item.answer_evidence;const pages=item.page_numbers||item.section_page_numbers||(ev&&ev.page_numbers);if(pages&&pages.length)parent.append(make('p','Source page(s): '+pages.join(', '),'muted'));if(ev&&ev.quote)parent.append(make('p','Source text: '+ev.quote));}
+function itrsCard(parent,itrs){if(!itrs)return;const section=make('div',undefined,'row');section.append(make('h3','ITRS development score: '+itrs.score+' / '+itrs.maximum),make('p',itrs.label.replaceAll('_',' '),'badge'));for(const [name,part] of Object.entries(itrs.components)){section.append(make('p',name.replaceAll('_',' ')+': '+part.score+' / '+part.maximum));}section.append(make('p',itrs.interpretation,'muted'));parent.append(section);}
+function guidedResult(data){
+
+    if(
+        data
+        && data.mode==='enterprise_evidence'
+    ){
+
+        captureEnterpriseTechnicalContext(
+            data
+        );
+
+        guidedEnterpriseResult(
+            data
+        );
+
+        return;
+    }
+
+const out=$('reviewOutput');out.replaceChildren(make('h2','Review result'),make('span',data.status.replaceAll('_',' '),'badge'));itrsCard(out,data.itrs);if($('sessionLabel').value)out.append(make('p',$('sessionLabel').value,'muted'));const body=data.source_result;if(body){if(body.answer)out.append(make('h3','Parameter named in the manual: '+body.answer));if(body.selected_description_alarm)out.append(make('h3','Reports support description '+body.selected_description_alarm));for(const item of body.report_assessment||body.source_records||body.candidates||body.source_sections||[]){const row=make('div',undefined,'row');row.append(make('strong',item.possible_cause||('Alarm '+item.alarm_number)));const status=item.status||(item.evaluation&&item.evaluation.status);if(status)row.append(make('p','Report support: '+status));evidence(row,item);out.append(row);}}if(data.message)out.append(make('p',data.message,'muted'));if(data.next_question){const q=data.next_question;out.append(make('h3',q.text));if(q.page_numbers)out.append(make('p','Question source page(s): '+q.page_numbers.join(', '),'muted'));const choices=make('div',undefined,'choices');for(const choice of q.choices){const button=make('button',choice.label);button.onclick=()=>{current.answers[q.fact_id]=choice.value;sendTurn();};choices.append(button);}out.append(choices);}details(out,data);}
+async function sendTurn(){if(busy)return;lock(true);$('reviewOutput').replaceChildren(make('p','Working on this turn...','muted'));try{const data=await post('/assistant/turn',current);current.answers=data.continuation_answers;guidedResult(data);}catch(error){$('reviewOutput').replaceChildren(make('h2','Review could not finish'),make('p',error.message,'error'));}finally{lock(false);}}
+$('reviewForm').onsubmit=event=>{event.preventDefault();const answers={};document.querySelectorAll('[data-fact]').forEach(select=>{if(select.value!=='')answers[select.dataset.fact]=select.value==='true'?true:select.value==='false'?false:select.value==='defer'?null:select.value;});current={mode:$('mode').value,user_message:$('description').value,answers};sendTurn();};
+const stores={Siemens:'212022f0a2614a7b839cc827522c6651_MC_diagnostics_man_0724_en-US_chunks_ready_bge_small.npz',ABB:'dde3696f00424107b1253d4dfd44a05b_ABB_LV_Motors_RevH_2022_structured_v1_ready_bge_small.npz'};
+function syncManufacturerSpecificFields(){
+
+    const isSiemens=(
+        $('manufacturer').value==='Siemens'
+    );
+
+    $('alarmLabel').hidden=!isSiemens;
+
+    if(!isSiemens){
+        $('alarm').value='';
+    }
+}
+
+$('manufacturer').onchange=
+    syncManufacturerSpecificFields;
+
+syncManufacturerSpecificFields();
+function searchResult(body){const out=$('searchOutput');out.replaceChildren(make('h2',body.selected_symptom||'Source results'),make('span',(body.status||'results').replaceAll('_',' '),'badge'));if(body.message)out.append(make('p',body.message,'muted'));if(body.source_filename)out.append(make('p',body.source_filename,'muted engineer-only-detail'));if(body.clarification&&body.clarification.required){out.append(make('h3',body.clarification.question));for(const option of body.clarification.options){const b=make('button',option.symptom);b.style.margin='6px';b.onclick=()=>searchCall('/documents/search/abb/confirm',{vector_store_filename:stores.ABB,symptom_id:option.symptom_id,top_k:10});out.append(b);}}for(const item of body.results||[]){const row=make('div',undefined,'row');row.append(make('h3',item.possible_cause||[item.alarm_number,item.alarm_title].filter(Boolean).join(' ')));if(item.manufacturer_guidance)row.append(make('p',item.manufacturer_guidance));if(item.text)row.append(make('pre',item.text));evidence(row,item);out.append(row);}if(body.selected_symptom==='Motor stalls'){const b=make('button','Review reports for Motor stalls');b.onclick=()=>{tabs('guided');$('mode').value='abb_stall';fields();document.querySelector('[data-fact="requested_information"]').value='review_reports';$('reviewOutput').replaceChildren(make('p','Motor stalls selected. Enter existing reports and start a new review.'));};out.append(b);}details(out,body);}
+async function searchCall(path,payload){if(busy)return;lock(true);$('searchOutput').replaceChildren(make('p','Searching the selected manual...','muted'));try{searchResult(await post(path,payload));}catch(error){$('searchOutput').replaceChildren(make('p',error.message,'error'));}finally{lock(false);}}
+
+function technicianEvidenceText(item){
+    const nested=item.evidence||item.answer_evidence||{};
+    return (
+        item.manufacturer_guidance
+        || item.text
+        || item.parent_text
+        || item.chunk_text
+        || item.content
+        || item.excerpt
+        || nested.quote
+        || nested.text
+        || ''
+    );
+}
+
+function technicianEvidencePages(item){
+    const nested=item.evidence||item.answer_evidence||{};
+    const pages=(
+        item.page_numbers
+        || item.section_page_numbers
+        || nested.page_numbers
+        || []
+    );
+
+    return Array.isArray(pages)
+        ? pages
+        : [];
+}
+
+function technicianEvidenceTitle(item,index){
+    return (
+        item.possible_cause
+        || item.alarm_title
+        || item.section_title
+        || item.heading
+        || item.title
+        || (
+            item.alarm_number
+                ? 'Alarm '+item.alarm_number
+                : 'Technical evidence '+(index+1)
+        )
+    );
+}
+
+function technicianReliabilityCard(parent,itrs){
+    if(!itrs)return;
+
+    const card=make(
+        'div',
+        undefined,
+        'row'
+    );
+
+    card.classList.add(
+        'technician-reliability'
+    );
+
+    card.append(
+        make(
+            'h3',
+            'Evidence reliability checks'
+        )
+    );
+
+    if(
+        typeof itrs.score==='number'
+        && typeof itrs.maximum==='number'
+    ){
+        card.append(
+            make(
+                'strong',
+                itrs.score+' / '+itrs.maximum
+            )
+        );
+    }
+
+    card.append(
+        make(
+            'p',
+            'This score reflects software, evidence and safety checks. It is not a diagnosis-confidence score.',
+            'muted'
+        )
+    );
+
+    parent.append(
+        card
+    );
+}
+
+function appendGuidedReviewHandoff(parent){
+    const handoff=make(
+        'div',
+        undefined,
+        'row'
+    );
+
+    handoff.classList.add(
+        'guided-review-handoff'
+    );
+
+    handoff.append(
+        make(
+            'h3',
+            'Need a structured troubleshooting review?'
+        ),
+        make(
+            'p',
+            'Guided Review asks for explicit reports before using them. Search text is not automatically treated as a machine fact.',
+            'muted'
+        )
+    );
+
+    const button=make(
+        'button',
+        'Continue with Guided Review'
+    );
+
+    button.type='button';
+
+    button.onclick=()=>{
+        tabs(
+            'guided'
+        );
+
+        $('reviewOutput').replaceChildren(
+            make(
+                'h2',
+                'Guided Review'
+            ),
+            make(
+                'p',
+                'Choose the appropriate workflow and enter only the reports you have actually observed.',
+                'muted'
+            )
+        );
+
+        if($('mode')){
+            $('mode').focus();
+        }
+    };
+
+    handoff.append(
+        button
+    );
+
+    parent.append(
+        handoff
+    );
+}
+
+
+function enterpriseSearchResult(data){
+    const out=$(
+        'searchOutput'
+    );
+
+    out.replaceChildren();
+
+
+    const heading=make(
+        'div',
+        undefined,
+        'row'
+    );
+
+
+    heading.append(
+        make(
+            'h2',
+            'Technical evidence'
+        ),
+        make(
+            'span',
+            (
+                data.status
+                || 'results'
+            ).replaceAll(
+                '_',
+                ' '
+            ),
+            'badge'
+        )
+    );
+
+
+    out.append(
+        heading
+    );
+
+
+    if(data.message){
+
+        out.append(
+            make(
+                'p',
+                data.message,
+                'muted'
+            )
+        );
+    }
+
+
+    technicianReliabilityCard(
+        out,
+        data.itrs
+    );
+
+
+    const sourceResult=(
+        data.source_result
+        || {}
+    );
+
+
+    const retrieval=(
+        sourceResult.evidence
+        || {}
+    );
+
+
+    const results=(
+        Array.isArray(
+            retrieval.results
+        )
+        ? retrieval.results
+        : []
+    );
+
+
+    if(!results.length){
+
+        const empty=make(
+            'div',
+            undefined,
+            'row'
+        );
+
+        empty.classList.add(
+            'evidence-empty-state'
+        );
+
+        empty.append(
+            make(
+                'h3',
+                'No registered evidence found'
+            ),
+            make(
+                'p',
+                'Check the manufacturer and describe the observed symptom more clearly. The system will not invent a troubleshooting conclusion when registered evidence is unavailable.',
+                'muted'
+            )
+        );
+
+        out.append(
+            empty
+        );
+
+        appendGuidedReviewHandoff(
+            out
+        );
+
+        return;
+    }
+
+
+    out.append(
+        make(
+            'p',
+            results.length
+                +' registered evidence result'
+                +(results.length===1?'':'s')
+                +' found.',
+            'muted'
+        )
+    );
+
+
+    results.forEach(
+        function(item,index){
+
+            const card=make(
+                'div',
+                undefined,
+                'row'
+            );
+
+            card.classList.add(
+                'technician-evidence-card'
+            );
+
+            card.append(
+                make(
+                    'h3',
+                    technicianEvidenceTitle(
+                        item,
+                        index
+                    )
+                )
+            );
+
+
+            const text=(
+                technicianEvidenceText(
+                    item
+                )
+            );
+
+
+            if(text){
+
+                card.append(
+                    make(
+                        'p',
+                        text
+                    )
+                );
+            }
+
+
+            const pages=(
+                technicianEvidencePages(
+                    item
+                )
+            );
+
+
+            if(pages.length){
+
+                card.append(
+                    make(
+                        'p',
+                        'Source page(s): '
+                        +pages.join(', '),
+                        'muted'
+                    )
+                );
+            }
+
+
+            const sourceParts=[];
+
+
+            if(item.manufacturer){
+
+                sourceParts.push(
+                    item.manufacturer
+                );
+            }
+
+
+            if(item.document_type){
+
+                sourceParts.push(
+                    item.document_type
+                );
+            }
+
+
+            if(item.revision){
+
+                sourceParts.push(
+                    'Revision '
+                    +item.revision
+                );
+            }
+
+
+            if(sourceParts.length){
+
+                card.append(
+                    make(
+                        'p',
+                        'Source: '
+                        +sourceParts.join(
+                            ' ? '
+                        ),
+                        'muted'
+                    )
+                );
+            }
+
+
+            out.append(
+                card
+            );
+        }
+    );
+
+
+    const safety=make(
+        'div',
+        undefined,
+        'row'
+    );
+
+    safety.classList.add(
+        'technician-safety-result'
+    );
+
+    safety.append(
+        make(
+            'h3',
+            'Safety status'
+        ),
+        make(
+            'p',
+            'Cause is not automatically confirmed.'
+        ),
+        make(
+            'p',
+            'No automatic machine action is performed.'
+        )
+    );
+
+    out.append(
+        safety
+    );
+
+
+    appendGuidedReviewHandoff(
+        out
+    );
+}
+
+
+async function enterpriseSearchCall(payload){
+    if(busy)return;
+
+
+    lock(true);
+
+
+    $('searchOutput').dataset.searchState=
+        'searching';
+
+
+    if($('searchStatusText')){
+
+        $('searchStatusText').textContent=
+            'Searching evidence';
+    }
+
+
+    $('searchOutput').replaceChildren(
+        make(
+            'p',
+            'Searching registered technical evidence...',
+            'muted'
+        )
+    );
+
+
+    try{
+
+        const data=await post(
+            '/assistant/turn',
+            payload
+        );
+
+
+        const sourceResult=(
+            data.source_result
+            || {}
+        );
+
+
+        const retrieval=(
+            sourceResult.evidence
+            || {}
+        );
+
+
+        const results=(
+            Array.isArray(
+                retrieval.results
+            )
+            ? retrieval.results
+            : []
+        );
+
+
+        $('searchOutput').dataset.searchState=
+            results.length
+                ? 'found'
+                : 'empty';
+
+
+        enterpriseSearchResult(
+            data
+        );
+
+        captureEnterpriseTechnicalContext(
+            data
+        );
+
+        appendEnterpriseGuidedHandoff();
+
+
+
+        if($('searchStatusText')){
+
+            $('searchStatusText').textContent=
+                results.length
+                    ? 'Evidence found'
+                    : 'No evidence found';
+        }
+
+
+    }catch(error){
+
+        $('searchOutput').dataset.searchState=
+            'error';
+
+
+        if($('searchStatusText')){
+
+            $('searchStatusText').textContent=
+                'Search unavailable';
+        }
+
+
+        $('searchOutput').replaceChildren(
+            make(
+                'h2',
+                'Evidence search could not finish'
+            ),
+            make(
+                'p',
+                error.message,
+                'error'
+            ),
+            make(
+                'p',
+                'No troubleshooting conclusion was generated.',
+                'muted'
+            )
+        );
+
+
+    }finally{
+
+        lock(false);
+    }
+}
+
+let currentTechnicalContext=null;
+
+
+function captureEnterpriseTechnicalContext(
+    data
+){
+
+    if(
+        !data
+        || data.mode!=='enterprise_evidence'
+    ){
+        currentTechnicalContext=null;
+        return;
+    }
+
+
+    const answers=
+        data.continuation_answers;
+
+
+    if(
+        !answers
+        || typeof answers!=='object'
+        || typeof answers.query!=='string'
+        || !answers.query.trim()
+    ){
+        currentTechnicalContext=null;
+        return;
+    }
+
+
+    currentTechnicalContext={
+        ...answers
+    };
+}
+
+
+function appendEnterpriseGuidedHandoff(){
+
+    if(
+        !currentTechnicalContext
+        || !currentTechnicalContext.query
+    ){
+        return;
+    }
+
+
+    const out=
+        $('searchOutput');
+
+
+    if(!out){
+        return;
+    }
+
+
+    const oldButton=
+        document.getElementById(
+            'continueEnterpriseGuidedReview'
+        );
+
+
+    if(oldButton){
+        oldButton.remove();
+    }
+
+
+    const wrapper=make(
+        'div',
+        undefined,
+        'row'
+    );
+
+
+    wrapper.id=
+        'enterpriseGuidedHandoff';
+
+
+    wrapper.append(
+        make(
+            'h3',
+            'Continue this technical case'
+        )
+    );
+
+
+    let label=
+        'Continue Guided Review';
+
+
+    if(
+        currentTechnicalContext.manufacturer
+        && currentTechnicalContext.alarm_number
+    ){
+        label+=
+            ' ? '
+            +currentTechnicalContext.manufacturer
+            +' '
+            +currentTechnicalContext.alarm_number;
+    }
+
+
+    const button=make(
+        'button',
+        label
+    );
+
+
+    button.type='button';
+
+    button.id=
+        'continueEnterpriseGuidedReview';
+
+
+    button.onclick=()=>{
+
+        const preservedAnswers={
+            ...currentTechnicalContext
+        };
+
+
+        current={
+            mode:
+                'enterprise_evidence',
+
+            user_message:
+                preservedAnswers.query,
+
+            answers:
+                preservedAnswers
+        };
+
+
+        if($('description')){
+
+            $('description').value=
+                preservedAnswers.query;
+        }
+
+
+        tabs(
+            'guided'
+        );
+
+
+        const caseLabel=[
+            preservedAnswers.manufacturer,
+
+            preservedAnswers.alarm_number
+                ? 'Alarm '
+                    +preservedAnswers.alarm_number
+                : null
+        ]
+        .filter(Boolean)
+        .join(' ? ');
+
+
+        $('reviewOutput').replaceChildren(
+            make(
+                'h2',
+                'Continuing technical case'
+            ),
+
+            make(
+                'p',
+                caseLabel,
+                'badge'
+            ),
+
+            make(
+                'p',
+                preservedAnswers.query,
+                'muted'
+            ),
+
+            make(
+                'p',
+                'Using the same registered evidence context.',
+                'muted'
+            )
+        );
+
+
+        sendTurn();
+    };
+
+
+    wrapper.append(
+        button
+    );
+
+
+    out.append(
+        wrapper
+    );
+}
+
+
+function guidedEnterpriseResult(
+    data
+){
+
+    const out=
+        $('reviewOutput');
+
+
+    out.replaceChildren(
+        make(
+            'h2',
+            'Technical review'
+        ),
+
+        make(
+            'span',
+            (
+                data.status
+                || 'review'
+            ).replaceAll(
+                '_',
+                ' '
+            ),
+            'badge'
+        )
+    );
+
+
+    const answers=
+        data.continuation_answers
+        || {};
+
+
+    const caseLabel=[
+        answers.manufacturer,
+
+        answers.alarm_number
+            ? 'Alarm '
+                +answers.alarm_number
+            : null
+    ]
+    .filter(Boolean)
+    .join(' ? ');
+
+
+    if(caseLabel){
+
+        out.append(
+            make(
+                'h3',
+                caseLabel
+            )
+        );
+    }
+
+
+    if(answers.query){
+
+        out.append(
+            make(
+                'p',
+                answers.query,
+                'muted'
+            )
+        );
+    }
+
+
+    if(data.message){
+
+        out.append(
+            make(
+                'p',
+                data.message
+            )
+        );
+    }
+
+
+    const bundle=
+        data.grounded_evidence_bundle
+        || {};
+
+
+    const items=
+        Array.isArray(
+            bundle.items
+        )
+        ? bundle.items
+        : [];
+
+
+    for(
+        const item
+        of items
+    ){
+
+        const metadata=
+            item.metadata
+            || {};
+
+
+        const row=make(
+            'div',
+            undefined,
+            'row'
+        );
+
+
+        const heading=[
+            metadata.alarm_number
+                ? 'Alarm '
+                    +metadata.alarm_number
+                : null,
+
+            metadata.alarm_title
+                || null
+        ]
+        .filter(Boolean)
+        .join(' ? ');
+
+
+        if(heading){
+
+            row.append(
+                make(
+                    'h3',
+                    heading
+                )
+            );
+        }
+
+
+        if(item.content){
+
+            row.append(
+                make(
+                    'pre',
+                    item.content
+                )
+            );
+        }
+
+
+        if(
+            Array.isArray(
+                item.page_numbers
+            )
+            && item.page_numbers.length
+        ){
+
+            row.append(
+                make(
+                    'p',
+                    'Source page(s): '
+                    +item.page_numbers.join(', '),
+                    'muted'
+                )
+            );
+        }
+
+
+        out.append(
+            row
+        );
+    }
+
+
+    const synthesis=
+        data.grounded_synthesis;
+
+
+    if(
+        synthesis
+        && synthesis.status
+            ==='accepted_for_review'
+        && synthesis.candidate_answer
+    ){
+
+        const guidance=make(
+            'div',
+            undefined,
+            'row'
+        );
+
+
+        guidance.append(
+            make(
+                'h3',
+                'Grounded guidance'
+            ),
+
+            make(
+                'p',
+                synthesis.candidate_answer
+            ),
+
+            make(
+                'p',
+                'Accepted for review only. '
+                +'This is not a confirmed diagnosis '
+                +'or automatic execution approval.',
+                'muted'
+            )
+        );
+
+
+        out.append(
+            guidance
+        );
+    }
+
+
+    if(
+        synthesis
+        && synthesis.status==='rejected'
+    ){
+
+        out.append(
+            make(
+                'p',
+                'Generated guidance was withheld because '
+                +'it did not pass deterministic grounding checks.',
+                'muted'
+            )
+        );
+    }
+}
+
+
+
+
+$('searchForm').onsubmit=event=>{
+    event.preventDefault();
+
+    const manufacturer=$(
+        'manufacturer'
+    ).value;
+
+    const query=$(
+        'query'
+    ).value.trim();
+
+    const alarm=$(
+        'alarm'
+    ).value.trim();
+
+
+    if(!query){
+
+        $('searchOutput').replaceChildren(
+            make(
+                'p',
+                'Enter the machine problem or symptom before searching.',
+                'error'
+            )
+        );
+
+        return;
+    }
+
+
+    const answers={
+        query,
+        manufacturer,
+        top_k:5
+    };
+
+
+    if(
+        manufacturer==='Siemens'
+        && alarm
+    ){
+        answers.alarm_number=alarm;
+    }
+
+
+    const payload={
+        mode:'enterprise_evidence',
+
+        user_message:
+            'Search registered industrial technical evidence.',
+
+        answers
+    };
+
+
+    enterpriseSearchCall(
+        payload
+    );
+};
+
+
+</script>
+
+
+<script>
+(function () {
+    "use strict";
+
+    const technicianButton =
+        document.getElementById(
+            "technicianViewBtn"
+        );
+
+    const engineerButton =
+        document.getElementById(
+            "engineerViewBtn"
+        );
+
+    const reviewOutput =
+        document.getElementById(
+            "reviewOutput"
+        );
+
+    const searchOutput =
+        document.getElementById(
+            "searchOutput"
+        );
+
+    const reviewStatus =
+        document.getElementById(
+            "reviewStatusText"
+        );
+
+    const searchStatus =
+        document.getElementById(
+            "searchStatusText"
+        );
+
+    function setView(engineer) {
+        document.body.classList.toggle(
+            "engineer-mode",
+            engineer
+        );
+
+        technicianButton.classList.toggle(
+            "active",
+            !engineer
+        );
+
+        engineerButton.classList.toggle(
+            "active",
+            engineer
+        );
+    }
+
+    technicianButton.addEventListener(
+        "click",
+        function () {
+            setView(false);
+        }
+    );
+
+    engineerButton.addEventListener(
+        "click",
+        function () {
+            setView(true);
+        }
+    );
+
+
+    function setProgress(stageIndex) {
+        const items =
+            document.querySelectorAll(
+                "#progressList .progress-item"
+            );
+
+        items.forEach(
+            function (item, index) {
+                item.classList.toggle(
+                    "complete",
+                    index < stageIndex
+                );
+
+                item.classList.toggle(
+                    "current",
+                    index === stageIndex
+                );
+            }
+        );
+    }
+
+
+    function outputHasContent(node) {
+        if (!node) {
+            return false;
+        }
+
+        return Boolean(
+            node.textContent.trim()
+        );
+    }
+
+
+    const reviewObserver =
+        new MutationObserver(
+            function () {
+                if (
+                    outputHasContent(
+                        reviewOutput
+                    )
+                ) {
+                    reviewStatus.textContent =
+                        "Guidance received";
+
+                    setProgress(4);
+                }
+            }
+        );
+
+    reviewObserver.observe(
+        reviewOutput,
+        {
+            childList: true,
+            subtree: true,
+            characterData: true
+        }
+    );
+
+
+    const searchObserver =
+        new MutationObserver(
+            function () {
+                if (
+                    outputHasContent(
+                        searchOutput
+                    )
+                ) {
+                    searchStatus.textContent =
+                        (
+                            searchOutput.dataset.searchState === "searching"
+                                ? "Searching evidence"
+                                : searchOutput.dataset.searchState === "empty"
+                                    ? "No evidence found"
+                                    : searchOutput.dataset.searchState === "error"
+                                        ? "Search unavailable"
+                                        : "Evidence found"
+                        );
+
+                    setProgress(3);
+                }
+            }
+        );
+
+    searchObserver.observe(
+        searchOutput,
+        {
+            childList: true,
+            subtree: true,
+            characterData: true
+        }
+    );
+
+    setView(false);
+})();
+</script>
+
+
+<div class="industrial-shell">
+    <footer class="operator-footer">
+        Industrial decision-support interface ?
+        Technician observations remain explicit ?
+        Evidence does not authorize automatic machine action
+    </footer>
+</div>
+
+<script id="sourcePagePreviewScript">
+(function () {
+    "use strict";
+
+    if (
+        typeof enterpriseSearchResult
+        !== "function"
+    ) {
+        return;
+    }
+
+
+    const enterpriseSearchResultBeforeSourcePreview =
+        enterpriseSearchResult;
+
+
+    function sourcePageNestedEvidence(item) {
+
+        return (
+            item
+            && (
+                item.evidence
+                || item.answer_evidence
+            )
+        ) || {};
+    }
+
+
+    function sourcePageDocumentId(
+        item,
+        retrieval,
+        sourceResult
+    ) {
+
+        const nested =
+            sourcePageNestedEvidence(
+                item
+            );
+
+        const candidates = [
+            item && item.document_id,
+            nested.document_id,
+            retrieval && retrieval.document_id,
+            sourceResult
+                && sourceResult.document_id
+        ];
+
+
+        for (
+            const candidate
+            of candidates
+        ) {
+
+            if (
+                typeof candidate === "string"
+                && candidate.trim()
+            ) {
+                return candidate.trim();
+            }
+        }
+
+
+        return "";
+    }
+
+
+    function readableSourceDocumentName(
+        item,
+        retrieval,
+        sourceResult
+    ) {
+
+        const nested =
+            sourcePageNestedEvidence(
+                item
+            );
+
+
+        const titleCandidates = [
+            item && item.document_title,
+            item && item.manual_title,
+            item && item.source_title,
+            nested.document_title,
+            nested.manual_title,
+            nested.source_title,
+            retrieval
+                && retrieval.document_title,
+            sourceResult
+                && sourceResult.document_title
+        ];
+
+
+        for (
+            const candidate
+            of titleCandidates
+        ) {
+
+            if (
+                typeof candidate === "string"
+                && candidate.trim()
+            ) {
+                return candidate.trim();
+            }
+        }
+
+
+        const filenameCandidates = [
+            item && item.original_filename,
+            item && item.source_filename,
+            nested.original_filename,
+            nested.source_filename,
+            retrieval
+                && retrieval.original_filename,
+            retrieval
+                && retrieval.source_filename,
+            sourceResult
+                && sourceResult.original_filename,
+            sourceResult
+                && sourceResult.source_filename
+        ];
+
+
+        for (
+            const candidate
+            of filenameCandidates
+        ) {
+
+            if (
+                typeof candidate !== "string"
+                || !candidate.trim()
+            ) {
+                continue;
+            }
+
+
+            let name =
+                candidate
+                .trim()
+                .split(/[\\/]/)
+                .pop();
+
+
+            name = name.replace(
+                /\.pdf$/i,
+                ""
+            );
+
+
+            /*
+              Hide the stored UUID/hash prefix from technicians.
+              Example:
+              dde3696f..._ABB_LV_Motors...
+                        ->
+              ABB LV Motors...
+            */
+            name = name.replace(
+                /^[0-9a-f]{32}_/i,
+                ""
+            );
+
+
+            name = name.replaceAll(
+                "_",
+                " "
+            );
+
+
+            name = name.replace(
+                /\s+/g,
+                " "
+            ).trim();
+
+
+            if (name) {
+                return name;
+            }
+        }
+
+
+        const manufacturer = (
+            item
+            && item.manufacturer
+        );
+
+
+        if (
+            typeof manufacturer === "string"
+            && manufacturer.trim()
+        ) {
+            return (
+                manufacturer.trim()
+                + " registered source"
+            );
+        }
+
+
+        return "Registered source document";
+    }
+
+
+    function normalizedSourcePages(item) {
+
+        const raw = (
+            typeof technicianEvidencePages
+            === "function"
+        )
+            ? technicianEvidencePages(
+                item
+            )
+            : [];
+
+
+        const pages = [];
+
+
+        for (
+            const value
+            of raw
+        ) {
+
+            const page =
+                Number(
+                    value
+                );
+
+
+            if (
+                Number.isInteger(page)
+                && page > 0
+                && !pages.includes(page)
+            ) {
+                pages.push(
+                    page
+                );
+            }
+        }
+
+
+        return pages;
+    }
+
+
+    function getSourcePageDialog() {
+
+        let dialog =
+            document.getElementById(
+                "sourcePageDialog"
+            );
+
+
+        if (dialog) {
+
+            return {
+                dialog:
+                    dialog,
+
+                title:
+                    document.getElementById(
+                        "sourcePageDialogTitle"
+                    ),
+
+                reference:
+                    document.getElementById(
+                        "sourcePageDialogReference"
+                    ),
+
+                frame:
+                    document.getElementById(
+                        "sourcePageFrame"
+                    )
+            };
+        }
+
+
+        dialog =
+            document.createElement(
+                "dialog"
+            );
+
+        dialog.id =
+            "sourcePageDialog";
+
+        dialog.className =
+            "source-page-dialog";
+
+
+        const shell =
+            document.createElement(
+                "div"
+            );
+
+        shell.className =
+            "source-page-dialog-shell";
+
+
+        const header =
+            document.createElement(
+                "div"
+            );
+
+        header.className =
+            "source-page-dialog-header";
+
+
+        const heading =
+            document.createElement(
+                "div"
+            );
+
+        heading.className =
+            "source-page-dialog-heading";
+
+
+        const title =
+            document.createElement(
+                "h2"
+            );
+
+        title.id =
+            "sourcePageDialogTitle";
+
+        title.textContent =
+            "Source evidence";
+
+
+        const reference =
+            document.createElement(
+                "p"
+            );
+
+        reference.id =
+            "sourcePageDialogReference";
+
+        reference.className =
+            "muted";
+
+
+        heading.append(
+            title,
+            reference
+        );
+
+
+        const close =
+            document.createElement(
+                "button"
+            );
+
+        close.type =
+            "button";
+
+        close.className =
+            "source-page-close";
+
+        close.textContent =
+            "Close";
+
+
+        const frame =
+            document.createElement(
+                "iframe"
+            );
+
+        frame.id =
+            "sourcePageFrame";
+
+        frame.className =
+            "source-page-frame";
+
+        frame.title =
+            "Original registered source PDF page";
+
+
+        const note =
+            document.createElement(
+                "p"
+            );
+
+        note.className =
+            "source-page-dialog-note muted";
+
+        note.textContent =
+            "This is the verified original source page. Viewing evidence does not confirm a diagnosis or authorize automatic machine action.";
+
+
+        close.onclick =
+            () => {
+
+                frame.src =
+                    "about:blank";
+
+                dialog.close();
+            };
+
+
+        dialog.addEventListener(
+            "close",
+            () => {
+
+                frame.src =
+                    "about:blank";
+            }
+        );
+
+
+        dialog.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target
+                    === dialog
+                ) {
+
+                    frame.src =
+                        "about:blank";
+
+                    dialog.close();
+                }
+            }
+        );
+
+
+        header.append(
+            heading,
+            close
+        );
+
+
+        shell.append(
+            header,
+            frame,
+            note
+        );
+
+
+        dialog.append(
+            shell
+        );
+
+
+        document.body.append(
+            dialog
+        );
+
+
+        return {
+            dialog:
+                dialog,
+            title:
+                title,
+            reference:
+                reference,
+            frame:
+                frame
+        };
+    }
+
+
+    function openSourcePagePreview(
+        documentId,
+        pageNumber,
+        sourceName
+    ) {
+
+        if (
+            typeof documentId !== "string"
+            || !documentId.trim()
+            || !Number.isInteger(
+                pageNumber
+            )
+            || pageNumber < 1
+        ) {
+            return;
+        }
+
+
+        const route = (
+            "/assistant/source-page/"
+            + encodeURIComponent(
+                documentId.trim()
+            )
+            + "/"
+            + String(
+                pageNumber
+            )
+        );
+
+
+        const preview =
+            getSourcePageDialog();
+
+
+        preview.title.textContent =
+            "Original source page";
+
+
+        preview.reference.textContent = (
+            sourceName
+            + " ? Page "
+            + pageNumber
+        );
+
+
+        preview.frame.src =
+            route;
+
+
+        if (
+            typeof preview.dialog.showModal
+            === "function"
+        ) {
+
+            preview.dialog.showModal();
+
+            return;
+        }
+
+
+        /*
+          Old-browser fallback only.
+          Current Chrome uses the inline dialog.
+        */
+        window.open(
+            route,
+            "_blank",
+            "noopener,noreferrer"
+        );
+    }
+
+
+    function evidenceCandidateRows(
+        output
+    ) {
+
+        return [
+            ...output.querySelectorAll(
+                ".row"
+            )
+        ].filter(
+            row => {
+
+                if (
+                    row.classList.contains(
+                        "technician-reliability"
+                    )
+                    || row.classList.contains(
+                        "guided-review-handoff"
+                    )
+                    || row.classList.contains(
+                        "evidence-empty-state"
+                    )
+                ) {
+                    return false;
+                }
+
+
+                const heading =
+                    row.querySelector(
+                        "h3, strong"
+                    );
+
+
+                if (!heading) {
+                    return false;
+                }
+
+
+                const text =
+                    heading.textContent
+                    .trim();
+
+
+                return (
+                    text
+                    && text
+                    !== "Evidence reliability checks"
+                    && text
+                    !== "Need a structured troubleshooting review?"
+                );
+            }
+        );
+    }
+
+
+    function locateEvidenceRow(
+        output,
+        item,
+        index,
+        usedRows
+    ) {
+
+        const expectedTitle = (
+            typeof technicianEvidenceTitle
+            === "function"
+        )
+            ? technicianEvidenceTitle(
+                item,
+                index
+            ).trim()
+            : "";
+
+
+        const candidates =
+            evidenceCandidateRows(
+                output
+            );
+
+
+        if (expectedTitle) {
+
+            for (
+                const row
+                of candidates
+            ) {
+
+                if (
+                    usedRows.has(row)
+                ) {
+                    continue;
+                }
+
+
+                const heading =
+                    row.querySelector(
+                        "h3, strong"
+                    );
+
+
+                if (
+                    heading
+                    && heading.textContent
+                        .trim()
+                        === expectedTitle
+                ) {
+
+                    return row;
+                }
+            }
+        }
+
+
+        for (
+            const row
+            of candidates
+        ) {
+
+            if (
+                !usedRows.has(row)
+            ) {
+                return row;
+            }
+        }
+
+
+        return null;
+    }
+
+
+    function appendSourcePageActions(
+        data
+    ) {
+
+        const output =
+            document.getElementById(
+                "searchOutput"
+            );
+
+
+        if (!output) {
+            return;
+        }
+
+
+        const sourceResult = (
+            data
+            && data.source_result
+        ) || {};
+
+
+        const retrieval = (
+            sourceResult.evidence
+        ) || {};
+
+
+        const results =
+            Array.isArray(
+                retrieval.results
+            )
+                ? retrieval.results
+                : [];
+
+
+        if (!results.length) {
+            return;
+        }
+
+
+        const usedRows =
+            new Set();
+
+
+        results.forEach(
+            (
+                item,
+                index
+            ) => {
+
+                const documentId =
+                    sourcePageDocumentId(
+                        item,
+                        retrieval,
+                        sourceResult
+                    );
+
+
+                const pages =
+                    normalizedSourcePages(
+                        item
+                    );
+
+
+                /*
+                  A preview button is shown only when retrieval
+                  actually returned both a registered document
+                  identity and one or more source page numbers.
+                */
+                if (
+                    !documentId
+                    || !pages.length
+                ) {
+                    return;
+                }
+
+
+                const row =
+                    locateEvidenceRow(
+                        output,
+                        item,
+                        index,
+                        usedRows
+                    );
+
+
+                if (!row) {
+                    return;
+                }
+
+
+                usedRows.add(
+                    row
+                );
+
+
+                if (
+                    row.querySelector(
+                        ".source-page-actions"
+                    )
+                ) {
+                    return;
+                }
+
+
+                const sourceName =
+                    readableSourceDocumentName(
+                        item,
+                        retrieval,
+                        sourceResult
+                    );
+
+
+                const actions =
+                    document.createElement(
+                        "div"
+                    );
+
+                actions.className =
+                    "source-page-actions";
+
+
+                const reference =
+                    document.createElement(
+                        "p"
+                    );
+
+                reference.className =
+                    "source-page-reference muted";
+
+
+                reference.textContent = (
+                    "Source: "
+                    + sourceName
+                    + " ? "
+                    + (
+                        pages.length === 1
+                            ? "Page "
+                            : "Pages "
+                    )
+                    + pages.join(
+                        ", "
+                    )
+                );
+
+
+                const buttonGroup =
+                    document.createElement(
+                        "div"
+                    );
+
+                buttonGroup.className =
+                    "source-page-button-group";
+
+
+                pages.forEach(
+                    pageNumber => {
+
+                        const button =
+                            document.createElement(
+                                "button"
+                            );
+
+                        button.type =
+                            "button";
+
+
+                        button.textContent = (
+                            pages.length === 1
+                                ? "View Source Page"
+                                : (
+                                    "View Source Page "
+                                    + pageNumber
+                                )
+                        );
+
+
+                        button.onclick =
+                            () => {
+
+                                openSourcePagePreview(
+                                    documentId,
+                                    pageNumber,
+                                    sourceName
+                                );
+                            };
+
+
+                        buttonGroup.append(
+                            button
+                        );
+                    }
+                );
+
+
+                actions.append(
+                    reference,
+                    buttonGroup
+                );
+
+
+                row.append(
+                    actions
+                );
+            }
+        );
+    }
+
+
+    /*
+      Preserve the existing enterprise evidence renderer.
+      We only add source-page controls after it finishes.
+    */
+    enterpriseSearchResult =
+        function (data) {
+
+            enterpriseSearchResultBeforeSourcePreview(
+                data
+            );
+
+            appendSourcePageActions(
+                data
+            );
+        };
+
+})();
+</script>
+
+<script id="workspaceModePolishScript">
+(function () {
+    "use strict";
+
+
+    const technicianButton =
+        document.getElementById(
+            "technicianViewBtn"
+        );
+
+
+    const engineerButton =
+        document.getElementById(
+            "engineerViewBtn"
+        );
+
+
+    if (
+        !technicianButton
+        || !engineerButton
+    ) {
+        return;
+    }
+
+
+    function makeBadge(
+        text
+    ) {
+
+        const badge =
+            document.createElement(
+                "span"
+            );
+
+        badge.className =
+            "workspace-mode-badge";
+
+        badge.textContent =
+            text;
+
+        return badge;
+    }
+
+
+    function makePanel(
+        cssClass,
+        titleText,
+        descriptionText,
+        badges
+    ) {
+
+        const panel =
+            document.createElement(
+                "section"
+            );
+
+        panel.className = (
+            "workspace-mode-panel "
+            + cssClass
+        );
+
+
+        const title =
+            document.createElement(
+                "h3"
+            );
+
+        title.textContent =
+            titleText;
+
+
+        const description =
+            document.createElement(
+                "p"
+            );
+
+        description.textContent =
+            descriptionText;
+
+
+        const badgeRow =
+            document.createElement(
+                "div"
+            );
+
+        badgeRow.className =
+            "workspace-mode-badges";
+
+
+        for (
+            const label
+            of badges
+        ) {
+
+            badgeRow.append(
+                makeBadge(
+                    label
+                )
+            );
+        }
+
+
+        panel.append(
+            title,
+            description,
+            badgeRow
+        );
+
+
+        return panel;
+    }
+
+
+    function ensureWorkspaceContext() {
+
+        let context =
+            document.getElementById(
+                "workspaceModeContext"
+            );
+
+
+        if (context) {
+            return context;
+        }
+
+
+        context =
+            document.createElement(
+                "section"
+            );
+
+        context.id =
+            "workspaceModeContext";
+
+        context.className =
+            "workspace-mode-context";
+
+
+        context.append(
+            makePanel(
+                "technician-workspace-context",
+                "Technician Workspace",
+                "Simple operational view for describing the problem, supplying observed conditions, reviewing grounded guidance and opening the original manufacturer evidence.",
+                [
+                    "Operator friendly",
+                    "Evidence first",
+                    "Explicit observations"
+                ]
+            ),
+
+            makePanel(
+                "engineering-workspace-context",
+                "Engineering Console",
+                "Technical inspection view for evidence traceability, reliability information, source-response details and bounded-agent behaviour. It does not authorize automatic machine action.",
+                [
+                    "Evidence trace",
+                    "Reliability details",
+                    "Technical inspection"
+                ]
+            )
+        );
+
+
+        const switchContainer =
+            technicianButton.parentElement;
+
+
+        if (switchContainer) {
+
+            switchContainer.insertAdjacentElement(
+                "afterend",
+                context
+            );
+        }
+
+
+        return context;
+    }
+
+
+    function syncWorkspaceMode() {
+
+        const engineering =
+            document.body.classList.contains(
+                "engineer-mode"
+            );
+
+
+        document.body.dataset.workspaceMode = (
+            engineering
+                ? "engineering"
+                : "technician"
+        );
+
+
+        technicianButton.setAttribute(
+            "aria-pressed",
+            engineering
+                ? "false"
+                : "true"
+        );
+
+
+        engineerButton.setAttribute(
+            "aria-pressed",
+            engineering
+                ? "true"
+                : "false"
+        );
+
+
+        technicianButton.dataset.active = (
+            engineering
+                ? "false"
+                : "true"
+        );
+
+
+        engineerButton.dataset.active = (
+            engineering
+                ? "true"
+                : "false"
+        );
+    }
+
+
+    ensureWorkspaceContext();
+
+
+    /*
+      Explicitly guarantee visual mode switching.
+      Existing application state and forms are untouched.
+    */
+
+    technicianButton.addEventListener(
+        "click",
+        function () {
+
+            document.body.classList.remove(
+                "engineer-mode"
+            );
+
+            syncWorkspaceMode();
+        }
+    );
+
+
+    engineerButton.addEventListener(
+        "click",
+        function () {
+
+            document.body.classList.add(
+                "engineer-mode"
+            );
+
+            syncWorkspaceMode();
+        }
+    );
+
+
+    /*
+      Keep our visual state synchronized with the existing
+      setView() implementation.
+    */
+
+    const observer =
+        new MutationObserver(
+            function () {
+
+                syncWorkspaceMode();
+            }
+        );
+
+
+    observer.observe(
+        document.body,
+        {
+            attributes: true,
+            attributeFilter: [
+                "class"
+            ]
+        }
+    );
+
+
+    syncWorkspaceMode();
+
+})();
+</script>
+
+<script id="industrialWorkspaceRedesignV1Script">
+(() => {
+    "use strict";
+
+    function byId(id) {
+        return document.getElementById(id);
+    }
+
+
+    function create(tag, className, text) {
+        const node = document.createElement(tag);
+
+        if (className) {
+            node.className = className;
+        }
+
+        if (text !== undefined) {
+            node.textContent = text;
+        }
+
+        return node;
+    }
+
+
+    function installWorkspaceIntro() {
+        if (byId("industrialWorkspaceIntro")) {
+            return;
+        }
+
+        const header = byId("industrialHeaderShell");
+
+        if (!header) {
+            return;
+        }
+
+        const root = create(
+            "section",
+            "iw-workspace-intro"
+        );
+
+        root.id = "industrialWorkspaceIntro";
+
+
+        const main = create(
+            "div",
+            "iw-intro-main"
+        );
+
+
+        const copy = create(
+            "div",
+            "iw-intro-copy-area"
+        );
+
+
+        copy.append(
+            create(
+                "div",
+                "iw-eyebrow",
+                "Evidence-guided troubleshooting"
+            )
+        );
+
+
+        copy.append(
+            create(
+                "h1",
+                "",
+                "Resolve technical issues with the source beside you."
+            )
+        );
+
+
+        copy.append(
+            create(
+                "p",
+                "iw-intro-copy",
+                "Describe the issue, search approved technical evidence, or continue a guided review. The system keeps manual evidence, operator observations and safety boundaries separate."
+            )
+        );
+
+
+        const state = create(
+            "div",
+            "iw-intro-state"
+        );
+
+
+        const sourceState = create(
+            "div",
+            "iw-state"
+        );
+
+        sourceState.append(
+            create(
+                "div",
+                "iw-state-label",
+                "Evidence"
+            ),
+            create(
+                "div",
+                "iw-state-value",
+                "Source-linked"
+            )
+        );
+
+
+        const controlState = create(
+            "div",
+            "iw-state"
+        );
+
+        controlState.append(
+            create(
+                "div",
+                "iw-state-label",
+                "Machine control"
+            ),
+            create(
+                "div",
+                "iw-state-value",
+                "Human controlled"
+            )
+        );
+
+
+        state.append(
+            sourceState,
+            controlState
+        );
+
+
+        main.append(
+            copy,
+            state
+        );
+
+
+        const principles = create(
+            "div",
+            "iw-principles"
+        );
+
+
+        const p1 = create(
+            "div",
+            "iw-principle"
+        );
+
+        p1.append(
+            create(
+                "strong",
+                "",
+                "Find evidence"
+            ),
+            create(
+                "span",
+                "",
+                "Search approved manuals and technical sources."
+            )
+        );
+
+
+        const p2 = create(
+            "div",
+            "iw-principle"
+        );
+
+        p2.append(
+            create(
+                "strong",
+                "",
+                "Review observations"
+            ),
+            create(
+                "span",
+                "",
+                "Provide only the machine facts you actually know."
+            )
+        );
+
+
+        const p3 = create(
+            "div",
+            "iw-principle"
+        );
+
+        p3.append(
+            create(
+                "strong",
+                "",
+                "Keep decisions bounded"
+            ),
+            create(
+                "span",
+                "",
+                "No confirmed diagnosis or automatic machine execution."
+            )
+        );
+
+
+        principles.append(
+            p1,
+            p2,
+            p3
+        );
+
+
+        root.append(
+            main,
+            principles
+        );
+
+
+        header.insertAdjacentElement(
+            "afterend",
+            root
+        );
+    }
+
+
+    function improveModeLabels() {
+        const guidedTab = byId("guidedTab");
+        const searchTab = byId("searchTab");
+
+        if (guidedTab) {
+            guidedTab.textContent =
+                "Guided Review";
+        }
+
+        if (searchTab) {
+            searchTab.textContent =
+                "Manual Evidence Search";
+        }
+    }
+
+
+    function updateOutputState(node) {
+        if (!node) {
+            return;
+        }
+
+        const meaningful =
+            node.textContent.trim().length > 0;
+
+        node.dataset.hasContent =
+            meaningful ? "true" : "false";
+    }
+
+
+    function observeOutputs() {
+        [
+            byId("reviewOutput"),
+            byId("searchOutput")
+        ]
+        .filter(Boolean)
+        .forEach((node) => {
+            updateOutputState(node);
+
+            new MutationObserver(() => {
+                updateOutputState(node);
+            })
+            .observe(
+                node,
+                {
+                    childList: true,
+                    subtree: true,
+                    characterData: true
+                }
+            );
+        });
+    }
+
+
+    function labelTextFor(control) {
+        if (!control) {
+            return "";
+        }
+
+        const label = control.closest("label");
+
+        if (label) {
+            return (
+                label.textContent || ""
+            )
+            .trim()
+            .toLowerCase();
+        }
+
+        return "";
+    }
+
+
+    function requestedInformationControl(form) {
+        if (!form) {
+            return null;
+        }
+
+        const direct =
+            form.querySelector(
+                '#requested_information, [name="requested_information"], [data-field-id="requested_information"] select'
+            );
+
+        if (direct) {
+            return direct;
+        }
+
+
+        for (const select of form.querySelectorAll("select")) {
+            const text =
+                labelTextFor(select);
+
+            if (
+                text.includes(
+                    "information needed"
+                )
+            ) {
+                return select;
+            }
+        }
+
+        return null;
+    }
+
+
+    function valueLooksUnselected(control) {
+        if (!control) {
+            return false;
+        }
+
+        const value =
+            String(
+                control.value ?? ""
+            )
+            .trim()
+            .toLowerCase();
+
+        const selectedText =
+            String(
+                control.options?.[
+                    control.selectedIndex
+                ]?.textContent ?? ""
+            )
+            .trim()
+            .toLowerCase();
+
+
+        return (
+            value === ""
+            ||
+            value === "choose"
+            ||
+            value === "select"
+            ||
+            selectedText === "ask me to choose"
+            ||
+            selectedText.startsWith(
+                "select "
+            )
+        );
+    }
+
+
+    function installGuidedValidation() {
+        const form =
+            byId("reviewForm");
+
+        const status =
+            byId("reviewStatusText");
+
+
+        if (!form) {
+            return;
+        }
+
+
+        form.addEventListener(
+            "submit",
+            (event) => {
+                const control =
+                    requestedInformationControl(
+                        form
+                    );
+
+
+                if (
+                    control
+                    && valueLooksUnselected(
+                        control
+                    )
+                ) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+
+                    if (status) {
+                        status.textContent =
+                            "Choose what you want help with before starting the review.";
+
+                        status.classList.add(
+                            "iw-form-warning"
+                        );
+                    }
+
+
+                    control.focus();
+
+                    return false;
+                }
+
+
+                if (status) {
+                    status.classList.remove(
+                        "iw-form-warning"
+                    );
+                }
+
+                return true;
+            },
+            true
+        );
+    }
+
+
+    function removeWarningWhenSelectionChanges() {
+        const form =
+            byId("reviewForm");
+
+        const status =
+            byId("reviewStatusText");
+
+
+        if (!form || !status) {
+            return;
+        }
+
+
+        form.addEventListener(
+            "change",
+            (event) => {
+                const control =
+                    requestedInformationControl(
+                        form
+                    );
+
+                if (
+                    control
+                    && event.target === control
+                    && !valueLooksUnselected(
+                        control
+                    )
+                ) {
+                    status.classList.remove(
+                        "iw-form-warning"
+                    );
+                }
+            }
+        );
+    }
+
+
+    function install() {
+        document.body.classList.add(
+            "industrial-workspace-v1"
+        );
+
+        installWorkspaceIntro();
+        improveModeLabels();
+        observeOutputs();
+        installGuidedValidation();
+        removeWarningWhenSelectionChanges();
+    }
+
+
+    if (
+        document.readyState
+        === "loading"
+    ) {
+        document.addEventListener(
+            "DOMContentLoaded",
+            install,
+            {
+                once: true
+            }
+        );
+    }
+    else {
+        install();
+    }
+})();
+</script>
+
+</body>
+</html>

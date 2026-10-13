@@ -1,0 +1,34 @@
+BUILDPLAN — READY-TO-RUN CONSTRUCTION PLANNING PROJECT
+
+1. Extract the complete ZIP using Extract All.
+2. Open the BuildPlan folder.
+3. Double-click START_WINDOWS.bat.
+4. Browser address: http://127.0.0.1:8765
+5. Click Generate plan to save and run the demo.
+
+Requires Python 3.10+ (your Python 3.11 is suitable).
+No pip packages, internet, Docker, Node.js, API key or LLM are needed
+for the normal launch. Do not run files from inside the ZIP viewer.
+
+PowerShell alternative:
+    python run.py
+
+If the port is busy:
+    python run.py --port 8766
+
+Keep the terminal open while using the app. Ctrl+C stops it.
+
+The dashboard includes:
+- Overview
+- Construction schedule
+- Activities editor
+- Labour, equipment and material resources
+- What-if comparison
+- Costs, reports and agent decisions
+
+README.md contains full instructions.
+docs/DEMO_GUIDE.md contains the mentor demonstration sequence.
+docs/ARCHITECTURE.md maps every PPT module to its implementation.
+
+Demo data is illustrative. Rule-based agents perform the scheduling.
+Optional Ollama explains results; it does not control the plan.

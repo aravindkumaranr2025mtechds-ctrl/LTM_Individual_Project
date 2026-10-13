@@ -1,0 +1,304 @@
+{
+  "name": "Community Centre \u00b7 Phase 1",
+  "location": "Chennai, Tamil Nadu",
+  "start_date": "2026-10-12",
+  "budget": 550000,
+  "overhead_per_day": 3500,
+  "target_days": 30,
+  "strategy": "critical",
+  "data_source": "Illustrative demonstration inputs created for this application. Not measured construction-site data.",
+  "resources": [
+    {
+      "id": "crew",
+      "name": "Site crew",
+      "kind": "labour",
+      "unit": "workers",
+      "capacity": 10,
+      "rate": 850,
+      "stock": 0,
+      "deliveries": [],
+      "unavailable_days": []
+    },
+    {
+      "id": "mason",
+      "name": "Masons",
+      "kind": "labour",
+      "unit": "workers",
+      "capacity": 4,
+      "rate": 1100,
+      "stock": 0,
+      "deliveries": [],
+      "unavailable_days": []
+    },
+    {
+      "id": "excavator",
+      "name": "Excavator",
+      "kind": "equipment",
+      "unit": "units",
+      "capacity": 1,
+      "rate": 4500,
+      "stock": 0,
+      "deliveries": [],
+      "unavailable_days": []
+    },
+    {
+      "id": "crane",
+      "name": "Mobile crane",
+      "kind": "equipment",
+      "unit": "units",
+      "capacity": 1,
+      "rate": 6000,
+      "stock": 0,
+      "deliveries": [],
+      "unavailable_days": []
+    },
+    {
+      "id": "mixer",
+      "name": "Concrete mixer",
+      "kind": "equipment",
+      "unit": "units",
+      "capacity": 1,
+      "rate": 1800,
+      "stock": 0,
+      "deliveries": [],
+      "unavailable_days": []
+    },
+    {
+      "id": "cement",
+      "name": "Cement",
+      "kind": "material",
+      "unit": "bags",
+      "capacity": 0,
+      "rate": 420,
+      "stock": 180,
+      "deliveries": [
+        {
+          "day": 12,
+          "quantity": 120
+        }
+      ],
+      "unavailable_days": []
+    },
+    {
+      "id": "steel",
+      "name": "Reinforcement steel",
+      "kind": "material",
+      "unit": "kg",
+      "capacity": 0,
+      "rate": 68,
+      "stock": 3000,
+      "deliveries": [],
+      "unavailable_days": []
+    },
+    {
+      "id": "blocks",
+      "name": "Concrete blocks",
+      "kind": "material",
+      "unit": "blocks",
+      "capacity": 0,
+      "rate": 42,
+      "stock": 1400,
+      "deliveries": [],
+      "unavailable_days": []
+    }
+  ],
+  "tasks": [
+    {
+      "id": "A01",
+      "name": "Site setup & survey",
+      "zone": "Site",
+      "duration": 2,
+      "dependencies": [],
+      "requirements": {
+        "crew": 4
+      },
+      "priority": 5,
+      "release_day": 0,
+      "fixed_cost": 12000
+    },
+    {
+      "id": "A02",
+      "name": "Foundation excavation",
+      "zone": "Main block",
+      "duration": 3,
+      "dependencies": [
+        "A01"
+      ],
+      "requirements": {
+        "crew": 5,
+        "excavator": 1
+      },
+      "priority": 5,
+      "release_day": 0,
+      "fixed_cost": 0
+    },
+    {
+      "id": "A03",
+      "name": "Steel reinforcement",
+      "zone": "Main block",
+      "duration": 3,
+      "dependencies": [
+        "A02"
+      ],
+      "requirements": {
+        "crew": 6,
+        "crane": 1,
+        "steel": 2000
+      },
+      "priority": 5,
+      "release_day": 0,
+      "fixed_cost": 0
+    },
+    {
+      "id": "A04",
+      "name": "Foundation formwork",
+      "zone": "Main block",
+      "duration": 2,
+      "dependencies": [
+        "A02"
+      ],
+      "requirements": {
+        "crew": 6,
+        "crane": 1
+      },
+      "priority": 4,
+      "release_day": 0,
+      "fixed_cost": 18000
+    },
+    {
+      "id": "A05",
+      "name": "Foundation concrete",
+      "zone": "Main block",
+      "duration": 2,
+      "dependencies": [
+        "A03",
+        "A04"
+      ],
+      "requirements": {
+        "crew": 8,
+        "mixer": 1,
+        "cement": 120
+      },
+      "priority": 5,
+      "release_day": 0,
+      "fixed_cost": 0
+    },
+    {
+      "id": "A06",
+      "name": "Foundation curing",
+      "zone": "Main block",
+      "duration": 5,
+      "dependencies": [
+        "A05"
+      ],
+      "requirements": {
+        "crew": 1
+      },
+      "priority": 5,
+      "release_day": 0,
+      "fixed_cost": 0
+    },
+    {
+      "id": "A07",
+      "name": "Ground-floor masonry",
+      "zone": "Main block",
+      "duration": 5,
+      "dependencies": [
+        "A06"
+      ],
+      "requirements": {
+        "crew": 6,
+        "mason": 4,
+        "cement": 90,
+        "blocks": 1200
+      },
+      "priority": 5,
+      "release_day": 0,
+      "fixed_cost": 0
+    },
+    {
+      "id": "A08",
+      "name": "Service trench & drainage",
+      "zone": "External works",
+      "duration": 3,
+      "dependencies": [
+        "A06"
+      ],
+      "requirements": {
+        "crew": 5,
+        "excavator": 1,
+        "cement": 20
+      },
+      "priority": 3,
+      "release_day": 0,
+      "fixed_cost": 15000
+    },
+    {
+      "id": "A09",
+      "name": "Roof reinforcement & formwork",
+      "zone": "Main block",
+      "duration": 3,
+      "dependencies": [
+        "A07"
+      ],
+      "requirements": {
+        "crew": 7,
+        "crane": 1,
+        "steel": 1000
+      },
+      "priority": 5,
+      "release_day": 0,
+      "fixed_cost": 20000
+    },
+    {
+      "id": "A10",
+      "name": "Electrical rough-in",
+      "zone": "Main block",
+      "duration": 3,
+      "dependencies": [
+        "A07"
+      ],
+      "requirements": {
+        "crew": 4
+      },
+      "priority": 3,
+      "release_day": 0,
+      "fixed_cost": 24000
+    },
+    {
+      "id": "A11",
+      "name": "Roof concrete",
+      "zone": "Main block",
+      "duration": 2,
+      "dependencies": [
+        "A09"
+      ],
+      "requirements": {
+        "crew": 8,
+        "mixer": 1,
+        "cement": 70
+      },
+      "priority": 5,
+      "release_day": 0,
+      "fixed_cost": 0
+    },
+    {
+      "id": "A12",
+      "name": "Inspection & handover",
+      "zone": "Site",
+      "duration": 1,
+      "dependencies": [
+        "A08",
+        "A10",
+        "A11"
+      ],
+      "requirements": {
+        "crew": 2,
+        "mason": 1
+      },
+      "priority": 5,
+      "release_day": 0,
+      "fixed_cost": 8000
+    }
+  ]
+}

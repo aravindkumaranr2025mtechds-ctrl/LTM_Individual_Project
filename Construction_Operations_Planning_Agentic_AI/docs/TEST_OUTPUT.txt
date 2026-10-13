@@ -1,0 +1,40 @@
+test_actual_http_plan_and_csv (test_http.HTTPTests.test_actual_http_plan_and_csv) ... ok
+test_cross_origin_and_bad_request (test_http.HTTPTests.test_cross_origin_and_bad_request) ... ok
+test_missing_route (test_http.HTTPTests.test_missing_route) ... ok
+test_static_bundle_and_traversal (test_http.HTTPTests.test_static_bundle_and_traversal) ... ok
+test_cost_math_and_budget (test_planning.PlanningTests.test_cost_math_and_budget) ... ok
+test_csv_formula_protection (test_planning.PlanningTests.test_csv_formula_protection) ... ok
+test_cycle_rejected (test_planning.PlanningTests.test_cycle_rejected) ... ok
+test_day_boundaries_and_material_single_consumption (test_planning.PlanningTests.test_day_boundaries_and_material_single_consumption) ... ok
+test_demo_frozen_expectations (test_planning.PlanningTests.test_demo_frozen_expectations) ... ok
+test_dependency_forward_and_backward_pass (test_planning.PlanningTests.test_dependency_forward_and_backward_pass) ... ok
+test_determinism_and_input_immutability (test_planning.PlanningTests.test_determinism_and_input_immutability) ... ok
+test_equipment_calendar_wait (test_planning.PlanningTests.test_equipment_calendar_wait) ... ok
+test_invalid_references_and_numbers (test_planning.PlanningTests.test_invalid_references_and_numbers) ... ok
+test_material_global_shortfall (test_planning.PlanningTests.test_material_global_shortfall) ... ok
+test_material_reservations_protect_later_activity (test_planning.PlanningTests.test_material_reservations_protect_later_activity) ... ok
+test_material_waits_for_delivery (test_planning.PlanningTests.test_material_waits_for_delivery) ... ok
+test_over_capacity_blocks_descendants (test_planning.PlanningTests.test_over_capacity_blocks_descendants) ... ok
+test_parallel_tasks_with_spare_capacity (test_planning.PlanningTests.test_parallel_tasks_with_spare_capacity) ... ok
+test_random_dag_schedule_invariants (test_planning.PlanningTests.test_random_dag_schedule_invariants) ... ok
+test_release_day_and_priority_selection (test_planning.PlanningTests.test_release_day_and_priority_selection) ... ok
+test_resource_leveling_eliminates_overload (test_planning.PlanningTests.test_resource_leveling_eliminates_overload) ... ok
+test_search_horizon_is_bounded (test_planning.PlanningTests.test_search_horizon_is_bounded) ... ok
+test_bad_json_shapes_return_validation_errors (test_planning.ServiceTests.test_bad_json_shapes_return_validation_errors) ... ok
+test_save_plan_history_and_persistence (test_planning.ServiceTests.test_save_plan_history_and_persistence) ... ok
+test_scenario_does_not_save_and_handles_infeasibility (test_planning.ServiceTests.test_scenario_does_not_save_and_handles_infeasibility) ... ok
+test_stale_save_rejected (test_planning.ServiceTests.test_stale_save_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 26 tests in 2.072s
+
+OK
+[BuildPlan] "GET /api/sample HTTP/1.1" 200 -
+[BuildPlan] "POST /api/plan HTTP/1.1" 200 -
+[BuildPlan] "POST /api/export/csv HTTP/1.1" 200 -
+[BuildPlan] "GET /api/projects HTTP/1.1" 200 -
+[BuildPlan] "POST /api/plan HTTP/1.1" 403 -
+[BuildPlan] "POST /api/plan HTTP/1.1" 422 -
+[BuildPlan] "GET /api/unknown HTTP/1.1" 404 -
+[BuildPlan] "GET / HTTP/1.1" 200 -
+[BuildPlan] "GET /../run.py HTTP/1.1" 404 -
